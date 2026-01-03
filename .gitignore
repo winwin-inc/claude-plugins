@@ -1,0 +1,28 @@
+# 项目生成的文档
+docs/
+*.md
+!README.md
+!CLAUDE.md
+!commands.md
+
+# 临时文件
+*.tmp
+*.swp
+*.swo
+*~
+
+# IDE 和编辑器
+.vscode/
+.idea/
+*.sublime-*
+
+# 操作系统
+.DS_Store
+Thumbs.db
+
+# 敏感信息
+.env
+.env.*
+*.key
+*.pem
+credentials.json
