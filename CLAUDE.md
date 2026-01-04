@@ -99,3 +99,11 @@ repo-wiki/
 
 **版本**: 1.0.0
 **最后更新**: 2025-01-04
+
+## Active Technologies
+- Python 3.11+ (Shell/Bash 脚本为核心，Python 作为辅助工具) (005-auto-doc-outline)
+- 文件系统 (Markdown 文档生成到 `docs/` 或 `zh/content/`) (005-auto-doc-outline)
+- Shell/Bash (核心) + Python 3.11+ (辅助片段) (005-auto-doc-outline)
+
+## Recent Changes
+- 005-auto-doc-outline: Added Python 3.11+ (Shell/Bash 脚本为核心，Python 作为辅助工具)
