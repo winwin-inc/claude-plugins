@@ -72,3 +72,4 @@ venv/
 ENV/
 env/
 .venv/
+*.backup.*
