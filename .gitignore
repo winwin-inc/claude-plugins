@@ -1,6 +1,5 @@
 # 项目生成的文档
 docs/
-*.md
 !README.md
 !CLAUDE.md
 !commands.md
