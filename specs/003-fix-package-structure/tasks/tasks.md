@@ -475,7 +475,61 @@ git checkout HEAD~1 -- pyproject.toml
 
 ---
 
-**任务列表版本**: 1.0.0
+## 📝 测试指南（需要 uv 环境）
+
+### 环境准备
+确保已安装 uv：
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### 完整测试流程
+```bash
+cd /home/yewenbin/work/ai/claude/repo-wiki
+
+# 1. 清理并重新构建
+rm -rf dist/ build/ *.egg-info
+uv build
+
+# 2. 验证 wheel 内容
+unzip -l dist/*.whl | grep "wiki_generator/__init__.py"
+unzip -l dist/*.whl | grep ".claude/commands/wiki-generate.md"
+unzip -l dist/*.whl | grep ".claude/templates/"
+
+# 3. 重新安装工具
+uv tool install . --force
+
+# 4. 测试模块导入
+python3 -c "import wiki_generator; print(wiki_generator.__version__)"
+
+# 5. 测试命令行工具
+wiki-generator --version
+
+# 6. 测试文件复制功能
+cd /tmp
+rm -rf test-project
+mkdir test-project && cd test-project
+git init
+wiki-generator --dry-run
+ls -la .claude/
+
+# 7. 清理
+cd /home/yewenbin/work/ai/claude/repo-wiki
+rm -rf /tmp/test-project
+```
+
+### 预期结果
+- ✅ `uv build` 成功生成 wheel 文件
+- ✅ Wheel 包含 `wiki_generator/__init__.py`
+- ✅ Wheel 包含 `.claude/commands/wiki-generate.md`
+- ✅ Wheel 包含 `.claude/templates/` 目录及所有模板
+- ✅ 模块导入成功，输出版本号 `1.0.0`
+- ✅ 命令行工具显示 `wiki-generator version 1.0.0`
+- ✅ 在测试项目中成功复制 `.claude` 目录
+
+---
+
+**任务列表版本**: 1.0.1
 **创建日期**: 2025-01-04
-**最后更新**: 2025-01-04
+**最后更新**: 2025-01-04（添加测试指南）
 **负责人**: Repo Wiki Generator 项目团队
