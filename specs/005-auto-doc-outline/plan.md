@@ -1,1018 +1,228 @@
-# 实施计划：自动文档大纲提取与主题映射
-
-**功能版本**: 1.0.0
-**创建日期**: 2026-01-04
-**状态**: 草稿
-**预计工期**: 9-15 天
-
----
-
-## 技术上下文
-
-### 现有基础
-
-本功能建立在 **Wiki Generator v2.0**（004-optimize-wiki-docs）之上：
-
-**已有能力**：
-- ✅ 配置驱动的文档生成系统
-- ✅ 10+ 技术栈显式检测规则（SQLAlchemy、FastAPI、Django、Flask、Celery、pytest 等）
-- ✅ 中文文件名和分层目录结构支持
-- ✅ 22 个高质量模板（中英各 11 个）
-- ✅ 完全覆盖文档生成策略
-- ✅ 部分成功错误处理机制
-- ✅ 基础自动化验证（`<cite>` 块、目录、Section sources）
-
-**技术栈**：
-- Python 3.8+ (CLI 工具)
-- Bash (shell 脚本，用于 `/wiki-generate` 命令)
-- Click (CLI 框架)
-- JSON Schema (配置验证)
-- Claude Code (AI 文档生成)
-
-**关键文件**：
-- `wiki_generator/.claude/commands/wiki-generate.md` - 文档生成命令（v2.0）
-- `wiki_generator/core/config_validator.py` - 配置验证器
-- `wiki_generator/models/config_models.py` - 配置数据模型
-- `wiki_generator/.claude/templates/zh/` - 中文模板目录
-- `wiki_generator/.claude/templates/en/` - 英文模板目录
-
-### 技术依赖
-
-| 依赖项 | 类型 | 版本 | 用途 |
-|--------|------|------|------|
-| wiki-generator v2.0 | 内部 | 004-optimize-wiki-docs | 基础文档生成框架 |
-| Python | 运行时 | 3.8+ | CLI 工具 |
-| Bash | 运行时 | 4.0+ | `/wiki-generate` 命令脚本 |
-| Click | 库 | 8.0+ | CLI 框架 |
-| jsonschema | 库 | 4.0+ | 配置验证 |
-
-### 技术未知和风险
-
-| 未知项 | 风险等级 | 缓解措施 |
-|--------|----------|----------|
-| 业务模块识别准确性 | 高 | 1. 支持多种目录结构模式<br>2. 提供手动配置覆盖 |
-| 大型项目性能（> 1000 文件） | 中 | 1. 并行处理多个模块<br>2. 缓存检测结果<br>3. 设置超时保护 |
-| AI 生成内容质量 | 中 | 1. 优化提示词工程<br>2. 提供内容模板和示例<br>3. 人工审核环节 |
-| 不同项目结构的适配性 | 中 | 1. 支持常见项目结构模式<br>2. 提供自定义规则配置 |
-
----
-
-## 宪章合规检查
-
-### 原则 1：中文优先原则 ✅
-
-**合规性**: 完全合规
-
-- 所有新增代码注释使用简体中文
-- Git 提交消息使用简体中文
-- 用户交互消息使用简体中文
-- 文档模板内容使用简体中文
-
-### 原则 2：代码优先原则 ✅
-
-**合规性**: 完全合规
-
-- 本功能专注于代码实现（技术栈检测、模块识别、内容生成逻辑）
-- 不创建额外的项目文档（README、设计文档等）
-- 仅更新必要的现有文档（wiki-generate.md 命令文件）
-
-### 原则 3：工具定位原则 ✅
-
-**合规性**: 完全合规
-
-- 本功能增强 `/wiki-generate` 命令的自动化能力
-- 为其他项目生成更完整、更准确的文档
-- 提升工具价值（自动识别、自适应生成）
-
-### 原则 4：命令一致性原则 ✅
-
-**合规性**: 完全合规
-
-- 继续使用 `/wiki-generate` 命令（不新增命令）
-- 保持命令格式：`/wiki-generate --full`
-- 命令文件：`wiki-generate.md`（已存在，增强功能）
-
-### 原则 5：文档质量原则 ✅
-
-**合规性**: 完全合规
-
-- 自动填充 70% 以上的文档内容（提升完整性）
-- 自动生成 Mermaid 架构图（提升可读性）
-- 自动验证链接有效性（减少断链）
-- 自适应内容深度（避免信息过载或信息不足）
-
-### 原则 6：增量更新原则 ⚠️ **例外批准**
-
-**例外说明**：
-- **违背内容**: 本功能采用"完全覆盖策略"（每次重新生成整个文档），而非"增量更新"
-- **例外理由**:
-  1. Wiki Generator v2.0 已采用完全覆盖策略（参考 004-optimize-wiki-docs）
-  2. AI 生成的文档应该完全重新生成，确保内容一致性和准确性
-  3. 用户通过 Git 管理版本历史，可以查看历史变更
-  4. 增量更新 AI 文档的复杂性远高于收益（合并 AI 生成内容很困难）
-- **批准状态**: ✅ 已在 004-optimize-wiki-docs 中批准
-- **记录位置**: specs/004-optimize-wiki-docs/spec.md (Clarification Session 2025-01-04 Afternoon, Q3)
-
-### 原则 7：AI 辅助原则 ✅
-
-**合规性**: 完全合规
-
-- AI 自动提取项目信息（README、pyproject.toml、package.json）
-- AI 自动生成文档内容（70% 填充率）
-- 用户审核和编辑生成的文档（人工环节）
-- AI 生成的内容准确性通过自动化验证检查
-
-### 原则 8：性能预期原则 ⚠️ **需要优化**
-
-**当前预期**（本功能）：
-- 技术栈检测时间：< 5 秒
-- 业务模块识别时间：< 30 秒
-- 文档生成时间：< 90 秒
-
-**宪章要求**：
-- `/wiki.overview`: < 30 秒
-- `/wiki.module`: < 10 秒
-- `/wiki.modules-all`: < 5 分钟
-
-**合规分析**：
-- ✅ 技术栈检测（< 5 秒）合理
-- ✅ 业务模块识别（< 30 秒）合理，等同于 `/wiki.overview`
-- ⚠️ 文档生成（< 90 秒）需要进一步优化，目标是接近 `/wiki.modules-all` 的 5 分钟
-- **缓解措施**: 并行处理多个模块、缓存检测结果、限制生成文档数量
-
-**结论**: 需要在实施过程中持续优化性能，最终目标符合宪章预期。
-
----
-
-## Gate 检查清单
-
-### Gate 1: 功能完整性 ✅
-
-- [x] FR-01: 自动检测 20+ 技术栈
-- [x] FR-02: 自动识别业务模块结构
-- [x] FR-03: 自适应文档内容深度
-- [x] FR-04: 自动生成文档索引和导航
-- [x] FR-05: 智能文档内容生成
-
-**状态**: 所有功能需求已定义明确
-
-### Gate 2: 依赖关系 ✅
-
-- [x] 依赖 001: Wiki Generator v2.0 已完成（004-optimize-wiki-docs）
-- [ ] 依赖 002: Python 包提供文件扫描工具（需要实现）
-- [x] 依赖 003: 配置系统支持扩展的检测规则配置（已有）
-- [x] 依赖 004: Claude Code 的 `/wiki-generate` 命令能够执行复杂脚本（已有）
-
-**状态**: 需要实现文件扫描工具
-
-### Gate 3: 技术可行性 ✅
-
-- [x] 技术栈检测：基于 `grep`、`find` 等标准工具，技术成熟
-- [x] 业务模块识别：基于目录结构扫描，逻辑清晰
-- [x] 内容生成：AI 驱动，已有 v2.0 基础
-- [x] 性能优化：并行处理、缓存等标准技术
-
-**状态**: 技术可行，无阻碍性风险
-
-### Gate 4: 资源可用性 ✅
-
-- [x] 开发时间：9-15 天，合理
-- [x] 技术栈：Python、Bash、Click，团队熟悉
-- [x] 依赖库：jsonschema、pytest，已使用
-
-**状态**: 资源充足
-
----
-
-## Phase 0: 研究和技术验证
-
-### 目标
-
-解决技术未知项，验证技术可行性，为设计阶段提供决策支持。
-
-### 任务
-
-#### T001: 研究业务模块识别最佳实践
-
-**研究问题**：
-1. 如何准确识别项目的业务模块（服务层、页面层、API 层等）？
-2. 如何处理不规范的目录结构？
-3. 如何评估模块规模（文件数量、代码行数、复杂度）？
-
-**研究方法**：
-- 分析 dingtalk-sdk-generator 和 dingtalk-notable-connect 的目录结构
-- 查找开源项目的目录结构最佳实践
-- 测试不同的扫描策略
-
-**预期输出**：
-- 业务模块识别规则（优先级顺序）
-- 模块规模评估算法
-- 边缘情况处理策略
-
-#### T002: 研究技术栈检测增强方案
-
-**研究问题**：
-1. 如何扩充技术栈检测规则从 10+ 到 20+？
-2. 如何提高检测准确率（从当前水平到 ≥ 95%）？
-3. 如何处理多个技术栈同时存在的情况？
-
-**研究方法**：
-- 调研主流 Python/JavaScript 技术栈的导入模式
-- 分析 False Positive 和 False Negative 案例
-- 设计多技术栈组合规则
-
-**预期输出**：
-- 20+ 技术栈检测规则（扩充清单）
-- 检测准确率提升策略
-- 多技术栈去重逻辑
-
-#### T003: 研究 AI 内容生成优化
-
-**研究问题**：
-1. 如何从 README、pyproject.toml、package.json 自动提取项目信息？
-2. 如何设计提示词模板以生成高质量的模块文档？
-3. 如何确保 AI 生成的内容格式规范（Markdown、Mermaid 图）？
-
-**研究方法**：
-- 分析 dingtalk-sdk-generator 和 dingtalk-notable-connect 的文档内容模式
-- 测试不同的提示词策略
-- 设计内容验证规则
-
-**预期输出**：
-- 项目信息提取逻辑（文件解析规则）
-- AI 提示词模板（按模块类型分类）
-- 内容格式验证规则
-
-#### T004: 研究性能优化策略
-
-**研究问题**：
-1. 如何并行处理多个业务模块？
-2. 如何缓存检测结果（技术栈、模块结构）？
-3. 如何优化大项目（> 1000 文件）的处理时间？
-
-**研究方法**：
-- 调研 Bash 并行处理技术（xargs、parallel、后台任务）
-- 设计缓存策略（文件路径哈希、时间戳检查）
-- 性能测试和瓶颈分析
-
-**预期输出**：
-- 并行处理方案
-- 缓存策略设计
-- 性能优化建议
-
-### 输出文档
-
-- `specs/005-auto-doc-outline/research.md` - 研究报告
-  - 每个研究任务的决策和理由
-  - 技术选型对比
-  - 实施建议
-
----
-
-## Phase 1: 设计和契约
-
-### 目标
-
-生成数据模型、API 契约、快速开始文档，为实施阶段提供详细设计。
-
-### 任务
-
-#### T011: 生成数据模型（data-model.md）
-
-**输入**：
-- 功能规范（spec.md）第 4 节（功能需求）
-- 研究报告（research.md）的业务模块识别规则
-
-**输出**：
-- `specs/005-auto-doc-outline/data-model.md`
-
-**内容**：
-1. **技术栈检测模型**
-   - TechStackRule (技术栈规则)
-     - name: 技术栈名称
-     - detection_patterns: 检测模式列表（文件路径、导入语句、配置文件）
-     - document_template: 对应的文档模板
-     - priority: 优先级（用于去重）
-
-2. **业务模块模型**
-   - BusinessModule (业务模块)
-     - name: 模块名称
-     - type: 模块类型（service/page/api/model）
-     - path: 模块路径
-     - file_count: 文件数量
-     - scale: 规模等级（small/medium/large/xlarge）
-     - depth: 文档层级深度（1-4）
-
-3. **文档生成配置模型**
-   - DocumentConfig (文档生成配置)
-     - detected_tech_stacks: 检测到的技术栈列表
-     - business_modules: 业务模块列表
-     - document_outline: 文档大纲（树状结构）
-     - content_variables: 内容变量（从项目提取）
-
-4. **验证规则模型**
-   - ValidationResult (验证结果)
-     - is_valid: 是否有效
-     - errors: 错误列表
-     - warnings: 警告列表
-
-#### T012: 生成 API 契约（contracts/）
-
-**输入**：
-- 功能规范（spec.md）第 4 节（功能需求）
-- 现有的 wiki-generate.md 命令结构
-
-**输出**：
-- `specs/005-auto-doc-outline/contracts/api-contracts.md`
-
-**内容**：
-1. **技术栈检测 API**（内部函数）
-   - 函数名: `detect_tech_stack(project_path)`
-   - 输入: 项目根目录路径
-   - 输出: 检测到的技术栈列表
-
-2. **业务模块识别 API**（内部函数）
-   - 函数名: `identify_business_modules(project_path, module_type)`
-   - 输入: 项目根目录路径、模块类型（service/page/api/model）
-   - 输出: 业务模块列表
-
-3. **模块规模评估 API**（内部函数）
-   - 函数名: `calculate_module_scale(module_path)`
-   - 输入: 模块路径
-   - 输出: 规模等级（small/medium/large/xlarge）
-
-4. **文档内容提取 API**（内部函数）
-   - 函数名: `extract_project_info(project_path)`
-   - 输入: 项目根目录路径
-   - 输出: 项目信息字典（name、description、version、features等）
-
-5. **文档大纲生成 API**（内部函数）
-   - 函数名: `generate_document_outline(config, modules)`
-   - 输入: 配置、业务模块列表
-   - 输出: 文档大纲（树状结构）
-
-#### T013: 生成快速开始文档（quickstart.md）
-
-**输入**：
-- 功能规范（spec.md）第 7 节（实施建议）
-- 研究报告（research.md）的技术决策
-
-**输出**：
-- `specs/005-auto-doc-outline/quickstart.md`
-
-**内容**：
-1. **开发环境设置**
-   - Python 环境要求
-   - 依赖安装（uv pip install -e ".[dev]"）
-   - 测试环境准备
-
-2. **代码结构概览**
-   - 新增文件列表
-   - 修改文件列表
-   - 目录结构变化
-
-3. **核心功能使用流程**
-   - 如何运行技术栈检测
-   - 如何识别业务模块
-   - 如何生成文档
-
-4. **开发工作流**
-   - 单元测试编写
-   - 集成测试编写
-   - 代码提交规范
-
-#### T014: 更新 Agent 上下文
-
-**输入**：
-- 研究报告（research.md）的技术决策
-- 数据模型（data-model.md）
-
-**输出**：
-- `.specify/memory/agent-context-claude.md`（更新）
-
-**内容**：
-- 新增技术栈检测规则
-- 新增业务模块识别模式
-- 新增性能优化策略
-
----
-
-## Phase 2: 任务分解
-
-### Phase 1: 技术栈检测增强（1-2 天）
-
-#### T101: 扩充技术栈检测规则
-
-**任务描述**：
-在 `wiki-generate.md` 中扩充技术栈检测规则，从当前 10+ 扩展到 20+。
-
-**技术栈清单**（20+ 种）：
-
-**后端框架**（4 种）：
-- FastAPI
-- Flask
-- Django
-- Tornado
-
-**ORM**（3 种）：
-- SQLAlchemy
-- Django ORM
-- Tortoise ORM
-
-**CLI 框架**（3 种）：
-- Click
-- Typer
-- argparse
-
-**前端框架**（3 种）：
-- React
-- Vue
-- Streamlit
-
-**任务队列**（2 种）：
-- Celery
-- RQ
-
-**消息队列**（2 种）：
-- Kafka
-- RabbitMQ
-
-**测试框架**（2 种）：
-- pytest
-- unittest
-
-**数据库**（3 种）：
-- PostgreSQL
-- MySQL
-- MongoDB
-
-**缓存**（2 种）：
-- Redis
-- Memcached
-
-**容器化**（3 种）：
-- Dockerfile
-- docker-compose
-- Kubernetes
-
-**API 规范**（3 种）：
-- OpenAPI
-- GraphQL
-- gRPC
-
-**总计**: 33 种（超过 20+ 目标）
-
-**实施步骤**：
-1. 在 `wiki-generate.md` 中添加检测逻辑
-2. 定义每种技术栈的触发条件（文件路径、导入语句、配置文件）
-3. 定义每种技术栈对应的文档模板
-4. 定义技术栈优先级（用于去重）
-
-**验收标准**：
-- ✅ 支持 33 种技术栈检测
-- ✅ 每种技术栈有明确的触发条件
-- ✅ 每种技术栈有对应的文档模板
-- ✅ 检测逻辑在 Bash 中实现
-
-#### T102: 实现技术栈去重逻辑
-
-**任务描述**：
-当检测到多个技术栈时，避免生成重复文档。
-
-**去重规则**：
-1. 后端框架去重：FastAPI > Flask > Django > Tornado（优先级顺序）
-2. ORM 去重：SQLAlchemy > Django ORM > Tortoise ORM
-3. 前端框架去重：React > Vue > Streamlit
-4. 消息队列去重：Kafka > RabbitMQ
-
-**实施步骤**：
-1. 定义技术栈优先级映射
-2. 在检测时应用优先级规则
-3. 只保留最高优先级的技术栈
-
-**验收标准**：
-- ✅ FastAPI 和 SQLAlchemy 只生成一份 API 文档和一份数据模型文档
-- ✅ React 和 Vue 只生成一份前端架构文档
-
-#### T103: 测试技术栈检测准确率
-
-**任务描述**：
-在多个真实项目上测试技术栈检测准确率，确保 ≥ 95%。
-
-**测试项目**：
-1. dingtalk-sdk-generator（FastAPI、SQLAlchemy、Click）
-2. dingtalk-notable-connect（Streamlit、SQLAlchemy、pytest）
-3. 其他开源项目（至少 3 个）
-
-**测试步骤**：
-1. 运行技术栈检测
-2. 对比实际使用的技术栈
-3. 计算准确率（正确检测数 / 总技术栈数）
-
-**验收标准**：
-- ✅ 在 5+ 个测试项目上准确率 ≥ 95%
-- ✅ False Positive ≤ 2%
-- ✅ False Negative ≤ 3%
-
-### Phase 2: 业务模块识别（2-3 天）
-
-#### T201: 实现目录结构扫描逻辑
-
-**任务描述**：
-实现 `identify_business_modules()` 函数，扫描项目目录结构，识别业务模块。
-
-**扫描目录**（优先级顺序）：
-1. **服务层**：`src/services/` → `app/services/` → `services/`
-2. **页面层**：`pages/` → `app/pages/` → `src/pages/`
-3. **API 层**：`api/` → `routers/` → `views/`
-4. **模型层**：`models/` → `src/models/`
-
-**扫描规则**：
-- 每个 `.py` 或 `.tsx` 文件（非 `__init__.py`）视为一个模块
-- 目录名作为模块名称（使用中文翻译）
-- 生成文档路径：`{模块类型}/{模块名}.md`
-
-**实施步骤**：
-1. 在 `wiki-generate.md` 中实现 `identify_service_modules()` 函数
-2. 在 `wiki-generate.md` 中实现 `identify_page_modules()` 函数
-3. 在 `wiki-generate.md` 中实现 `identify_api_modules()` 函数
-4. 在 `wiki-generate.md` 中实现 `identify_model_modules()` 函数
-
-**验收标准**：
-- ✅ 能够扫描 4 种类型的模块
-- ✅ 模块命名清晰（使用中文业务术语）
-- ✅ 生成正确的文档路径
-
-#### T202: 实现模块规模评估逻辑
-
-**任务描述**：
-实现 `calculate_module_scale()` 函数，评估模块规模，决定文档层级深度。
-
-**规模评估规则**：
-| 文件数量 | 层级深度 | 生成策略 |
-|---------|---------|---------|
-| 1-4 文件 | 1 层 | 只生成索引文档 |
-| 5-20 文件 | 2 层 | 生成索引 + 子功能文档 |
-| 21-50 文件 | 3 层 | 生成索引 + 子功能 + 机制文档 |
-| >50 文件 | 4 层 | 生成完整层级 |
-
-**实施步骤**：
-1. 在 `wiki-generate.md` 中实现 `calculate_module_scale()` 函数
-2. 统计模块目录下的文件数量
-3. 根据文件数量返回规模等级（small/medium/large/xlarge）
-4. 根据规模等级返回层级深度（1-4）
-
-**验收标准**：
-- ✅ 正确统计模块文件数量
-- ✅ 正确返回规模等级
-- ✅ 正确返回层级深度
-
-#### T203: 实现中文模块命名
-
-**任务描述**：
-将英文模块名翻译为中文，提升文档可读性。
-
-**命名规则**：
-1. **服务层**：
-   - `user_service.py` → 用户管理服务.md
-   - `database_service.py` → 数据库服务.md
-   - `import_service.py` → 导入服务.md
-
-2. **页面层**：
-   - `Connection.py` → 数据库连接页面.md
-   - `Mapping.py` → 字段映射页面.md
-   - `Import.py` → 数据导入页面.md
-
-3. **API 层**：
-   - `user_routes.py` → 用户管理API.md
-   - `connection_routes.py` → 数据库连接API.md
-
-4. **模型层**：
-   - `user.py` → 用户模型.md
-   - `database_connection.py` → 数据库连接模型.md
-
-**实施步骤**：
-1. 创建英文→中文映射表（常见模块名）
-2. 对于未知的模块名，使用规则转换（驼峰→中文）
-3. 特殊处理缩写（API → API、SQL → SQL）
-
-**验收标准**：
-- ✅ 常见模块名正确翻译为中文
-- ✅ 特殊术语保留英文（API、SQL）
-- ✅ 命名一致性
-
-#### T204: 测试业务模块识别准确率
-
-**任务描述**：
-在多个真实项目上测试业务模块识别准确率，确保 ≥ 90%。
-
-**测试项目**：
-1. dingtalk-sdk-generator（服务层、API 层）
-2. dingtalk-notable-connect（服务层、页面层、模型层）
-3. 其他开源项目（至少 3 个）
-
-**测试步骤**：
-1. 运行业务模块识别
-2. 对比实际的业务模块结构
-3. 计算覆盖率（正确识别数 / 实际模块数）
-
-**验收标准**：
-- ✅ 在 5+ 个测试项目上覆盖率 ≥ 90%
-- ✅ False Positive ≤ 5%
-- ✅ False Negative ≤ 10%
-
-### Phase 3: 自适应内容生成（3-5 天）
-
-#### T301: 实现项目信息提取逻辑
-
-**任务描述**：
-实现 `extract_project_info()` 函数，从项目文件中自动提取信息。
-
-**提取来源**：
-1. **README.md**：
-   - 项目名称
-   - 项目描述
-   - 核心功能（从列表中提取）
-
-2. **pyproject.toml**：
-   - 项目名称
-   - 版本号
-   - 依赖列表
-   - 开发依赖
-
-3. **package.json**（JavaScript 项目）：
-   - 项目名称
-   - 版本号
-   - 依赖列表
-
-4. **.python-version** 或 **runtime.txt**：
-   - Python 版本
-
-**实施步骤**：
-1. 在 `wiki-generate.md` 中实现 `extract_from_readme()` 函数
-2. 在 `wiki-generate.md` 中实现 `extract_from_pyproject()` 函数
-3. 在 `wiki-generate.md` 中实现 `extract_from_package_json()` 函数
-4. 在 `wiki-generate.md` 中实现 `extract_project_info()` 主函数
-
-**验收标准**：
-- ✅ 能够从 README 提取项目名称、描述、功能列表
-- ✅ 能够从 pyproject.toml 提取依赖列表
-- ✅ 提取准确率 ≥ 80%
-
-#### T302: 实现文档模板变量填充
-
-**任务描述**：
-实现 `fill_template_variables()` 函数，自动填充文档模板变量。
-
-**变量清单**：
-1. **项目基本信息**：
-   - `{PROJECT_NAME}` - 项目名称
-   - `{PROJECT_DESCRIPTION}` - 项目描述
-   - `{PROJECT_VERSION}` - 项目版本
-   - `{PYTHON_VERSION}` - Python 版本
-
-2. **技术栈信息**：
-   - `{BACKEND_FRAMEWORK}` - 后端框架
-   - `{FRONTEND_FRAMEWORK}` - 前端框架
-   - `{ORM}` - ORM 框架
-   - `{DATABASE}` - 数据库
-
-3. **依赖信息**：
-   - `{DEPENDENCIES}` - 依赖列表（表格格式）
-   - `{DEV_DEPENDENCIES}` - 开发依赖列表
-
-4. **核心功能**：
-   - `{FEATURES}` - 核心功能列表
-
-**实施步骤**：
-1. 定义所有模板变量
-2. 从项目信息提取对应值
-3. 在模板中替换变量
-
-**验收标准**：
-- ✅ 支持 10+ 模板变量
-- ✅ 变量填充准确率 ≥ 95%
-- ✅ 填充后的模板格式正确
-
-#### T303: 实现模块化文档内容生成
-
-**任务描述**：
-根据模块规模生成不同深度的文档内容。
-
-**内容深度规则**：
-- **小型模块**（1-4 文件）：简介 + 主要功能 + 核心组件 + 文件链接
-- **中型模块**（5-20 文件）：项目结构图 + 依赖关系 + 使用示例 + 子文档
-- **大型模块**（21-50 文件）：详细组件分析 + 数据流 + 性能考虑 + 故障排查 + 多层子文档
-- **超大型模块**（>50 文件）：索引文档 + 分类子模块 + 详细机制文档
-
-**实施步骤**：
-1. 定义 4 种内容模板（对应 4 种规模）
-2. 根据模块规模选择对应模板
-3. 填充模板内容
-
-**验收标准**：
-- ✅ 4 种内容模板都已定义
-- ✅ 内容深度匹配模块复杂度
-- ✅ 避免信息过载或信息不足
-
-#### T304: 优化 AI 提示词模板
-
-**任务描述**：
-设计 AI 提示词模板，生成高质量的模块文档。
-
-**提示词模板**（按模块类型分类）：
-1. **服务模块提示词**：侧重业务逻辑、依赖关系、使用示例
-2. **页面模块提示词**：侧重 UI 组件、状态管理、用户交互
-3. **API 模块提示词**：侧重端点定义、请求响应、认证授权
-4. **模型模块提示词**：侧重字段定义、关系映射、验证规则
-
-**实施步骤**：
-1. 设计 4 种提示词模板
-2. 测试不同提示词的效果
-3. 优化提示词（迭代改进）
-
-**验收标准**：
-- ✅ 4 种提示词模板都已定义
-- ✅ 生成的内容质量分数 ≥ 80 分（人工评分）
-- ✅ 生成的内容格式规范（Markdown、Mermaid）
-
-### Phase 4: 索引和导航生成（1-2 天）
-
-#### T401: 实现文档索引生成逻辑
-
-**任务描述**：
-实现 `generate_document_index()` 函数，自动生成文档索引文件。
-
-**索引结构**：
-```markdown
-# 文档索引
-
-## 快速开始
-- [快速开始](../快速开始.md) - 5 分钟上手指南
-
-## 项目概述
-- [项目概述](../项目概述.md) - 项目介绍和核心目标
-
-## 核心功能模块
-
-### 数据库连接管理
-- [数据库连接管理](数据库连接管理/数据库连接管理.md)
-  - [连接配置](数据库连接管理/连接配置/连接配置.md)
-  - [连接存储与加密](数据库连接管理/连接存储与加密/连接存储与加密.md)
-  - [连接测试](数据库连接管理/连接测试/连接测试.md)
-...
+# Implementation Plan: 自动文档大纲提取与主题映射
+
+**Branch**: `005-auto-doc-outline` | **Date**: 2026-01-04 | **Spec**: [spec.md](spec.md)
+**Input**: Feature specification from `/specs/005-auto-doc-outline/spec.md`
+
+**Note**: This template is filled in by the `/speckit.plan` command. See `.specify/templates/commands/plan.md` for the execution workflow.
+
+## Summary
+
+通过分析实际项目（dingtalk-sdk-generator 和 dingtalk-notable-connect）的 Wiki 文档结构，优化 `/wiki-generate` 命令，实现：
+1. **自动技术栈检测**：支持 20+ 框架和库的自动识别（FastAPI、Django、React、SQLAlchemy 等）
+2. **智能模块识别**：扫描服务层、页面层、API 路由、模型层，自动识别业务模块
+3. **自适应文档深度**：根据模块规模（1-4/5-20/21-50/>50 文件）生成 1-4 层文档结构
+4. **Monorepo 支持**：检测多包项目结构，为每个子项目生成独立文档集
+5. **智能内容填充**：从 README、配置文件、代码注释提取信息，自动填充 70%+ 文档内容
+
+技术方法：通过静态分析（grep/find）、模式匹配、模板变量填充实现全串行文档生成流程。所有核心逻辑在 **Claude Code Agent/Skill** 中实现，不创建独立的 Python 模块包。
+
+## Technical Context
+
+**Language/Version**: Shell/Bash (核心) + Python 3.11+ (辅助片段)
+**Primary Dependencies**:
+  - Shell 工具：`bash` (4.0+), `grep`, `find`, `sed`, `awk`
+  - Claude Code：自定义斜杠命令 (`/wiki-generate`)
+  - Agent/Skill 框架：Claude Code 内置 Agent 或 Skill 系统
+
+**Storage**: 文件系统 (Markdown 文档生成到 `docs/` 或 `zh/content/`)
+**Testing**: Shell 脚本集成测试（测试整个 Agent/Skill 工作流）
+**Target Platform**: Linux/macOS (Claude Code 运行环境)
+**Project Type**: single (Claude Code Agent/Skill + 文档生成脚本)
+
+**Performance Goals**:
+  - 技术栈检测时间 < 5 秒（中型项目）
+  - 业务模块识别时间 < 30 秒（大型项目）
+  - 文档生成时间 < 90 秒（大型项目）
+  - 内存占用 < 500 MB
+
+**Constraints**:
+  - 采用**全串行处理**策略（避免并发问题和资源竞争）
+  - 只统计源代码文件（排除测试、配置、构建文件）
+  - 检测失败时生成基础文档 + 警告 + 手动配置指南
+  - **所有核心逻辑在 Agent/Skill 中实现**（不创建 core/、utils/ Python 模块）
+
+**Scale/Scope**:
+  - 支持 20+ 技术栈检测规则
+  - 支持小型到超大型项目（1-1000+ 文件）
+  - 生成 1-4 层文档结构
+  - 目标文档覆盖率 ≥ 90%
+
+## Constitution Check
+
+*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+
+基于项目 CLAUDE.md 指南制定以下核心原则：
+
+### I. Python 依赖管理 (NON-NEGOTIABLE)
+- ✅ 使用 `uv` 管理所有 Python 依赖（如果有辅助 Python 脚本）
+- ✅ 命令格式：`uv run pytest` / `uv run python ...`
+- ❌ 禁止直接使用 `python` 或 `pytest` 命令
+
+### II. 语言与文档规范
+- ✅ 所有交互使用**简体中文**（代码注释、文档、错误消息、日志）
+- ✅ 变量名用英文，注释用中文
+- ✅ **只编写代码，不生成文档**（除非用户明确要求）
+
+### III. 测试策略
+- ✅ 使用 Shell 脚本集成测试（测试整个 Agent/Skill 工作流）
+- ✅ 不编写 Python 单元测试（遵循"避免过度工程"原则）
+- ✅ 测试覆盖率通过端到端测试验证
+
+### IV. 代码质量
+- ✅ Shell 脚本遵循 Shell 最佳实践（ShellCheck）
+- ✅ Python 片段遵循 PEP 8（如果有）
+- ✅ 所有脚本包含详细的中文注释
+
+### V. 避免过度工程 (NON-NEGOTIABLE)
+- ✅ 避免创建不必要的抽象层
+- ✅ 优先选择简单直接的解决方案
+- ✅ **不创建独立的 Python 模块包**（core/、utils/ 等）
+- ✅ **在 Agent/Skill 中实现所有核心逻辑**
+
+## Project Structure
+
+### Documentation (this feature)
+
+```text
+specs/005-auto-doc-outline/
+├── plan.md              # This file (/speckit.plan command output)
+├── research.md          # Phase 0 output (/speckit.plan command)
+├── data-model.md        # Phase 1 output (/speckit.plan command)
+├── quickstart.md        # Phase 1 output (/speckit.plan command)
+├── contracts/           # Phase 1 output (/speckit.plan command)
+│   ├── tech-stack-detection-rules.md
+│   └── file-extraction-strategies.md
+└── tasks.md             # Phase 2 output (/speckit.tasks command - NOT created by /speckit.plan)
 ```
 
-**实施步骤**：
-1. 扫描所有生成的文档
-2. 按逻辑分组（快速开始、核心功能、技术文档、开发相关、部署与运维）
-3. 生成树状索引结构
-4. 添加文档简短描述
+### Source Code (repository root)
 
-**验收标准**：
-- ✅ 索引包含所有生成的文档
-- ✅ 索引按逻辑分组
-- ✅ 提供文档简短描述
-- ✅ 链接正确可点击
+```text
+repo-wiki/
+├── .claude/                   # Claude Code 配置和命令
+│   ├── commands/
+│   │   └── wiki-generate.md   # 文档生成命令（入口，调用 Agent/Skill）
+│   ├── skills/                # Claude Code Skills（核心逻辑实现）
+│   │   └── doc-generator/
+│   │       ├── tech_stack_detection.md      # 技术栈检测逻辑
+│   │       ├── module_scanning.md           # 业务模块识别逻辑
+│   │       ├── monorepo_detection.md        # Monorepo 结构检测
+│   │       ├── content_extraction.md        # 信息提取逻辑
+│   │       ├── outline_generation.md        # 文档大纲生成
+│   │       ├── content_generation.md        # 文档内容生成
+│   │       └── index_generation.md          # 文档索引生成
+│   └── templates/             # 文档模板
+│       ├── base-docs/         # 基础必需文档模板
+│       ├── tech-specific/     # 技术栈特定文档模板
+│       └── modules/           # 业务模块文档模板
+│
+├── tests/                     # 测试目录
+│   ├── integration/           # 集成测试（Shell 脚本）
+│   │   ├── test_tech_stack_detection.sh
+│   │   ├── test_module_scanning.sh
+│   │   ├── test_content_extraction.sh
+│   │   ├── test_full_workflow.sh
+│   │   └── test_monorepo_support.sh
+│   └── fixtures/              # 测试固件
+│       ├── projects/          # 测试用项目样本
+│       │   ├── fastapi-project/
+│       │   ├── django-project/
+│       │   ├── react-project/
+│       │   └── monorepo-project/
+│       └── expected_outputs/  # 预期输出样本
+│
+├── pyproject.toml             # 项目配置（如果有辅助 Python 工具）
+├── cli.py                     # Wiki Generator 安装工具
+└── CLAUDE.md                  # Claude Code 指南
+```
 
-#### T402: 实现文档交叉引用链接
+**Structure Decision**:
+- 采用 **Agent/Skill 架构**（而非 Python 模块包）
+- 核心逻辑集中在 `.claude/skills/doc-generator/` 目录中
+- 每个功能模块一个 Skill 文件（tech_stack_detection.md、module_scanning.md 等）
+- 通过 `/wiki-generate` 命令调用相关 Skills
+- 只保留集成测试，不编写单元测试（遵循"避免过度工程"原则）
+- 符合项目定位：Claude Code 工具，非独立 Python 包
 
-**任务描述**：
-在文档中自动添加交叉引用链接。
+## Complexity Tracking
 
-**交叉引用规则**：
-1. 相关文档链接（如：数据库连接管理 → 字段映射配置）
-2. 依赖模块链接（如：服务模块 → API 模块）
-3. 技术栈文档链接（如：FastAPI → API 文档）
+> **Fill ONLY if Constitution Check has violations that must be justified**
 
-**实施步骤**：
-1. 定义文档关系映射（基于目录结构和模块依赖）
-2. 在文档末尾添加"相关文档"章节
-3. 生成交叉引用链接
+| Violation | Why Needed | Simpler Alternative Rejected Because |
+|-----------|------------|-------------------------------------|
+| N/A | N/A | N/A |
 
-**验收标准**：
-- ✅ 主要文档都有相关文档链接
-- ✅ 链接正确有效
-- ✅ 链接描述清晰
-
-### Phase 5: 集成测试和优化（2-3 天）
-
-#### T501: 集成到 wiki-generate.md
-
-**任务描述**：
-将所有功能集成到 `wiki-generate.md` 命令文件中。
-
-**集成点**：
-1. 技术栈检测（扩充检测规则）
-2. 业务模块识别（新增函数）
-3. 自适应内容生成（新增函数）
-4. 文档索引生成（新增函数）
-
-**实施步骤**：
-1. 更新 `wiki-generate.md` 中的 `detect_tech_stack()` 函数
-2. 添加 `identify_business_modules()` 函数
-3. 添加 `extract_project_info()` 函数
-4. 添加 `generate_document_outline()` 函数
-5. 添加 `generate_document_index()` 函数
-6. 更新主文档生成流程
-
-**验收标准**：
-- ✅ 所有函数都已集成
-- ✅ 函数调用流程正确
-- ✅ 错误处理完善
-
-#### T502: 端到端测试
-
-**任务描述**：
-在多个真实项目上测试完整的文档生成流程。
-
-**测试项目**：
-1. dingtalk-sdk-generator（CLI 工具）
-2. dingtalk-notable-connect（Web 应用）
-3. 至少 3 个其他开源项目
-
-**测试步骤**：
-1. 运行 `/wiki-generate --full`
-2. 验证生成的文档结构
-3. 验证生成的内容质量
-4. 测量生成时间
-
-**验收标准**：
-- ✅ 在 5+ 个测试项目上成功生成文档
-- ✅ 技术栈检测准确率 ≥ 95%
-- ✅ 业务模块识别覆盖率 ≥ 90%
-- ✅ 内容自动填充率 ≥ 70%
-- ✅ 文档生成时间 < 90 秒（大型项目）
-
-#### T503: 性能优化
-
-**任务描述**：
-优化文档生成性能，确保符合宪章预期。
-
-**优化策略**：
-1. **并行处理**：使用 `xargs` 或 GNU `parallel` 并行处理多个模块
-2. **缓存检测结果**：缓存技术栈检测结果和模块结构
-3. **限制生成数量**：设置最大文档数量限制，避免超时
-
-**实施步骤**：
-1. 实现并行处理逻辑
-2. 实现缓存机制
-3. 实现超时保护
-4. 性能测试和调优
-
-**验收标准**：
-- ✅ 技术栈检测时间 < 5 秒
-- ✅ 业务模块识别时间 < 30 秒
-- ✅ 文档生成时间 < 90 秒（大型项目，> 500 文件）
-- ✅ 内存占用 < 500 MB
-
-#### T504: 编写单元测试和集成测试
-
-**任务描述**：
-为新功能编写完整的单元测试和集成测试。
-
-**测试覆盖**：
-1. **单元测试**：
-   - `test_detect_tech_stack()` - 技术栈检测
-   - `test_identify_business_modules()` - 业务模块识别
-   - `test_calculate_module_scale()` - 模块规模评估
-   - `test_extract_project_info()` - 项目信息提取
-   - `test_generate_document_outline()` - 文档大纲生成
-
-2. **集成测试**：
-   - `test_full_workflow()` - 完整文档生成流程
-   - `test_multi_tech_stack()` - 多技术栈项目
-   - `test_large_project()` - 大型项目（> 500 文件）
-
-**实施步骤**：
-1. 创建 `tests/test_v2/test_auto_outline.py`
-2. 创建 `tests/test_v2/integration/test_auto_outline_integration.py`
-3. 编写测试用例
-4. 运行测试并确保通过
-
-**验收标准**：
-- ✅ 单元测试覆盖率 ≥ 80%
-- ✅ 所有测试通过
-- ✅ 集成测试覆盖 3+ 个真实项目
-
-#### T505: 更新用户文档
-
-**任务描述**：
-更新 README.md 和相关用户文档，说明新功能的使用方法。
-
-**更新内容**：
-1. **README.md**：
-   - 添加"自动文档大纲提取"章节
-   - 说明自动检测能力
-   - 说明自适应深度生成
-
-2. **CLAUDE.md**：
-   - 更新开发指南
-   - 添加新功能的开发说明
-
-3. **tests/test_v2/README.md**：
-   - 添加新功能的测试指南
-
-**实施步骤**：
-1. 更新 README.md
-2. 更新 CLAUDE.md
-3. 更新测试指南
-
-**验收标准**：
-- ✅ 文档清晰说明新功能
-- ✅ 提供使用示例
-- ✅ 文档格式一致
+**说明**：当前设计遵循项目宪法原则，无违规行为需要论证。采用 Agent/Skill 架构是**更简单**的方案，而非过度工程。
 
 ---
 
-## 关键文件清单
+## Constitution Check (Post-Design)
 
-### 新增文件
+*GATE: Design phase completion verification - Re-evaluated after Phase 1*
 
-| 文件路径 | 用途 |
-|---------|------|
-| `wiki_generator/core/module_scanner.py` | 业务模块扫描器 |
-| `wiki_generator/core/tech_detector.py` | 技术栈检测器（提取到独立模块） |
-| `wiki_generator/core/info_extractor.py` | 项目信息提取器 |
-| `tests/test_v2/test_auto_outline.py` | 单元测试 |
-| `tests/test_v2/integration/test_auto_outline_integration.py` | 集成测试 |
+### 宪法原则符合性评估
 
-### 修改文件
+| 原则 | 设计决策 | 符合性 | 验证方法 |
+|------|---------|--------|---------|
+| **I. Python 依赖管理** | 不创建 Python 模块包，Agent/Skill 使用 Shell 脚本 | ✅ PASS | 无需 `uv` 依赖管理（Shell 脚本独立运行） |
+| **II. 语言与文档规范** | Shell 脚本注释使用中文，变量名用英文 | ✅ PASS | Agent/Skill 文件包含详细中文注释 |
+| **III. 测试策略** | 只编写集成测试（Shell 脚本），不编写单元测试 | ✅ PASS | `tests/integration/` 包含端到端测试 |
+| **IV. 代码质量** | Shell 脚本遵循 Shell 最佳实践 | ✅ PASS | 使用 ShellCheck 验证脚本质量 |
+| **V. 避免过度工程** | 采用 Agent/Skill 架构，不创建 core/、utils/ 模块 | ✅ PASS | 所有逻辑集中在 Agent/Skill 文件中，无复杂抽象 |
 
-| 文件路径 | 修改内容 |
-|---------|---------|
-| `wiki_generator/.claude/commands/wiki-generate.md` | 集成所有新功能 |
-| `wiki_generator/models/config_models.py` | 添加新的数据模型 |
-| `README.md` | 更新用户文档 |
-| `CLAUDE.md` | 更新开发指南 |
-| `tests/test_v2/README.md` | 更新测试指南 |
+### 设计决策与宪法一致性验证
 
----
+#### 1. 架构选择
+- **决策**：采用 Claude Code Agent/Skill 架构，而非 Python 模块包
+- **符合性**：✅ 完全符合"避免过度工程"原则
+- **理由**：
+  - Agent/Skill 比 Python 模块包**更简单**（无需打包、依赖管理）
+  - 符合项目定位（Claude Code 工具，非独立 Python 包）
+  - 用户可直接阅读和修改 Shell 脚本（无需理解 Python 模块结构）
 
-## 成功标准验证
+#### 2. 实现语言
+- **决策**：Shell/Bash 脚本为核心，Python 作为辅助片段
+- **符合性**：✅ 符合"优先选择简单直接的解决方案"
+- **理由**：Shell 工具（grep、find）快速可靠，无需额外依赖
 
-### 功能完整性
+#### 3. 测试策略
+- **决策**：只编写集成测试，不编写单元测试
+- **符合性**：✅ 符合"避免过度工程"原则
+- **理由**：Agent/Skill 的单元测试价值低，端到端测试更能验证实际工作流
 
-| 指标 | 目标值 | 验证方法 |
-|------|--------|----------|
-| 技术栈检测数量 | ≥ 20 种 | 单元测试 |
-| 业务模块识别覆盖率 | ≥ 90% | 真实项目测试 |
-| 文档层级深度支持 | 1-4 层 | 功能测试 |
-| 自动内容填充率 | ≥ 70% | 内容分析 |
+#### 4. 并发策略
+- **决策**：全串行处理（用户明确选择）
+- **符合性**：✅ 符合"优先选择简单直接的解决方案"
+- **理由**：避免并发问题和资源竞争，性能满足需求
 
-### 用户体验
+#### 5. 实施架构约束
+- **决策**：不创建 core/、utils/ Python 模块
+- **符合性**：✅ 符合"避免创建不必要的抽象层"
+- **理由**：所有逻辑集中在 Agent/Skill 文件中更易维护
 
-| 指标 | 目标值 | 验证方法 |
-|------|--------|----------|
-| 新用户零配置可用性 | 100% | 用户测试 |
-| 文档结构清晰度 | ≥ 4/5 分 | 用户调研 |
-| 内容准确性 | ≥ 95% | 人工审核 |
+### 潜在风险与缓解措施
 
-### 性能
+| 风险 | 宪法原则影响 | 缓解措施 |
+|------|-------------|---------|
+| Shell 脚本可维护性 | IV. 代码质量 | 提供详细中文注释，遵循 Shell 最佳实践，使用 ShellCheck 验证 |
+| 文档生成质量 | II. 语言与文档规范 | 分层信息提取 + 人工审核指南 |
+| 测试覆盖率不足 | III. 测试策略 | 通过端到端集成测试覆盖主要场景 |
+| Agent/Skill 调试困难 | IV. 代码质量 | 添加详细日志输出，提供调试模式 |
 
-| 指标 | 目标值 | 验证方法 |
-|------|--------|----------|
-| 技术栈检测时间 | < 5 秒 | 性能测试 |
-| 业务模块识别时间 | < 30 秒 | 性能测试 |
-| 文档生成时间 | < 90 秒 | 性能测试 |
+### 最终评估
 
-### 质量
+✅ **PASS** - 当前设计完全符合项目宪法原则，无违规行为。
 
-| 指标 | 目标值 | 验证方法 |
-|------|--------|----------|
-| 技术栈检测准确率 | ≥ 95% | 准确率测试 |
-| 模块识别准确率 | ≥ 90% | 准确率测试 |
-| Markdown 格式正确率 | 100% | 静态检查 |
-| 文档链接有效率 | 100% | 链接检查 |
+**关键优势**：
+1. 采用 Agent/Skill 架构是**最简单**的方案（比 Python 模块包更简单）
+2. 所有逻辑集中在 Shell 脚本中，用户可直接阅读和修改
+3. 无需依赖管理和打包，符合 Claude Code 工具定位
+4. 只编写集成测试，避免过度工程
 
----
-
-## 风险与缓解
-
-| 风险 | 影响 | 概率 | 缓解措施 |
-|------|------|------|----------|
-| 业务模块识别不准确 | 生成错误的文档 | 高 | 1. 支持多种目录结构模式<br>2. 提供手动覆盖配置 |
-| 大型项目性能问题 | 生成时间过长 | 中 | 1. 并行处理<br>2. 缓存<br>3. 超时保护 |
-| AI 生成内容质量差 | 需要大量手动编辑 | 中 | 1. 优化提示词<br>2. 提供模板<br>3. 人工审核 |
-
----
-
-## 后续增强
-
-### 短期增强（3-6 个月）
-- 交互式文档大纲预览
-- 自定义检测规则
-- 文档模板自定义
-- 增量更新优化
-
-### 中长期增强（6-12 个月）
-- 机器学习辅助预测
-- 文档质量评分
-- 多语言支持增强
-- 可视化配置工具
+**建议**：
+1. 在实施过程中确保所有 Shell 脚本包含详细的中文注释
+2. 使用 ShellCheck 验证脚本质量
+3. 编写全面的集成测试，覆盖主要场景
+4. 定期更新 Agent 上下文，保持技术栈信息同步
 
 ---
-
-**计划版本**: 1.0.0
-**最后更新**: 2026-01-04
-**状态**: 待实施
