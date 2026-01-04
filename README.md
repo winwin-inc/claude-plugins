@@ -116,22 +116,23 @@ uvx wiki-generator
 
 ```
 repo-wiki/
-├── src/                          # 源代码
-│   ├── cli.py                    # CLI 入口
-│   ├── __main__.py               # 模块入口
-│   ├── core/                     # 核心功能
-│   │   ├── config_manager.py     # 配置管理
-│   │   ├── file_handler.py       # 文件处理
-│   │   ├── file_scanner.py       # 代码扫描
-│   │   ├── source_parser.py      # 源码解析
+├── wiki_generator/              # 源代码包
+│   ├── __init__.py              # 包初始化
+│   ├── cli.py                   # CLI 入口
+│   ├── __main__.py              # 模块入口
+│   ├── core/                    # 核心功能
+│   │   ├── config_manager.py    # 配置管理
+│   │   ├── file_handler.py      # 文件处理
+│   │   ├── file_scanner.py      # 代码扫描
+│   │   ├── source_parser.py     # 源码解析
 │   │   └── ...
-│   ├── models/                   # 数据模型
-│   │   ├── config.py             # 配置模型
-│   │   └── command.py            # 命令模型
-│   └── utils/                    # 工具函数
-│       ├── formatter.py          # 格式化输出
-│       ├── validator.py          # 验证器
-│       └── file_helper.py        # 文件助手
+│   ├── models/                  # 数据模型
+│   │   ├── config.py            # 配置模型
+│   │   └── command.py           # 命令模型
+│   └── utils/                   # 工具函数
+│       ├── formatter.py         # 格式化输出
+│       ├── validator.py         # 验证器
+│       └── file_helper.py       # 文件助手
 ├── .claude/                      # Claude Code 命令和模板
 │   ├── commands/                 # 自定义命令定义
 │   │   ├── wiki-init.md

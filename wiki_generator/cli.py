@@ -22,14 +22,28 @@ import os
 import shutil
 from pathlib import Path
 
+# 包数据文件访问（跨 Python 版本兼容）
+try:
+    # Python 3.9+
+    from importlib.resources import files as _files
+    def _get_package_data(path: str) -> Path:
+        """获取包内数据文件路径"""
+        return Path(str(_files('wiki_generator') / path))
+except ImportError:
+    # Python 3.8
+    from pkg_resources import resource_filename
+    def _get_package_data(path: str) -> Path:
+        """获取包内数据文件路径"""
+        return Path(resource_filename('wiki_generator', path))
+
 
 # 添加项目根目录到 Python 路径（用于导入工具模块）
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from src.utils.formatter import format_success, format_info, format_warning, format_error
-from src.utils.validator import validate_claude_directory
-from src.utils.file_helper import calculate_directory_size, format_size
+from wiki_generator.utils.formatter import format_success, format_info, format_warning, format_error
+from wiki_generator.utils.validator import validate_claude_directory
+from wiki_generator.utils.file_helper import calculate_directory_size, format_size
 
 
 def get_package_claude_dir():
@@ -42,12 +56,8 @@ def get_package_claude_dir():
     Raises:
         RuntimeError: 如果 .claude/ 目录不存在
     """
-    # 获取项目根目录（src/ 的上一级）
-    project_root = Path(__file__).parent.parent.resolve()
-
-    # .claude/ 目录在项目根目录下
-    # 即 repo-wiki/.claude/
-    claude_dir = project_root / ".claude"
+    # 使用包数据文件访问函数获取 .claude 目录
+    claude_dir = _get_package_data('.claude')
 
     if not claude_dir.exists():
         raise RuntimeError(

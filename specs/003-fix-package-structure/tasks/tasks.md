@@ -91,12 +91,12 @@ graph TD
 
 ### 任务清单
 
-- [ ] T001 重命名 `src/` 目录为 `wiki_generator/`
+- [x] T001 重命名 `src/` 目录为 `wiki_generator/`
   - **文件**: 项目根目录
   - **命令**: `mv src wiki_generator`
   - **验证**: 目录 `wiki_generator/` 存在，`src/` 不存在
 
-- [ ] T002 创建 `wiki_generator/__init__.py` 包含版本信息
+- [x] T002 创建 `wiki_generator/__init__.py` 包含版本信息
   - **文件**: `wiki_generator/__init__.py`
   - **内容**:
     ```python
@@ -125,13 +125,13 @@ graph TD
 
 ### 任务清单
 
-- [ ] T003 更新 `pyproject.toml` 中的包路径配置
+- [x] T003 更新 `pyproject.toml` 中的包路径配置
   - **文件**: `pyproject.toml`
   - **变更**: `[tool.hatch.build.targets.wheel] packages = ["wiki_generator"]`
   - **修改前**: `packages = ["src"]`
   - **验证**: `grep 'packages = \["wiki_generator"\]' pyproject.toml`
 
-- [ ] T004 [P] 添加 `.claude` 目录到 `include` 配置
+- [x] T004 [P] 添加 `.claude` 目录到 `include` 配置
   - **文件**: `pyproject.toml`
   - **变更**: 添加 `include` 配置
     ```toml
@@ -147,13 +147,13 @@ graph TD
     ```
   - **验证**: 配置中包含所有 `.claude` 文件模式
 
-- [ ] T005 [P] 更新命令行入口点配置
+- [x] T005 [P] 更新命令行入口点配置
   - **文件**: `pyproject.toml`
   - **变更**: `[project.scripts] wiki-generator = "wiki_generator.cli:cli"`
   - **修改前**: `wiki-generator = "src.cli:cli"`
   - **验证**: `grep 'wiki-generator = "wiki_generator.cli:cli"' pyproject.toml`
 
-- [ ] T006 [P] 更新 Ruff 配置的源代码目录
+- [x] T006 [P] 更新 Ruff 配置的源代码目录
   - **文件**: `pyproject.toml`
   - **变更**: `[tool.ruff] src = ["wiki_generator"]`
   - **修改前**: `src = ["src"]`
@@ -177,7 +177,7 @@ graph TD
 
 ### 任务清单
 
-- [ ] T007 添加包数据文件访问辅助函数到 `cli.py`
+- [x] T007 添加包数据文件访问辅助函数到 `cli.py`
   - **文件**: `wiki_generator/cli.py`
   - **位置**: 文件顶部导入区域
   - **内容**:
@@ -200,7 +200,7 @@ graph TD
     ```
   - **验证**: 函数定义存在，导入正确
 
-- [ ] T008 更新 `cli.py` 中的 `claude_dir` 获取方式
+- [x] T008 更新 `cli.py` 中的 `claude_dir` 获取方式
   - **文件**: `wiki_generator/cli.py`
   - **变更**: 替换所有旧的 `claude_dir` 获取方式
   - **新方式**: `claude_dir = _get_package_data('.claude')`
@@ -221,12 +221,12 @@ graph TD
 
 ### 任务清单
 
-- [ ] T009 清理旧的构建产物
+- [x] T009 清理旧的构建产物
   - **文件**: 项目根目录
   - **命令**: `rm -rf dist/ build/ *.egg-info`
   - **验证**: 上述目录不存在
 
-- [ ] T010 重新构建 wheel 包
+- [ ] T010 重新构建 wheel包
   - **文件**: 项目根目录
   - **命令**: `uv build`
   - **验证**: `dist/wiki_generator-*.whl` 文件存在
@@ -315,7 +315,7 @@ graph TD
 
 ### 任务清单
 
-- [ ] T017 更新 README.md 中的项目结构图
+- [x] T017 更新 README.md 中的项目结构图
   - **文件**: `README.md`
   - **变更**: 将 `src/` 更新为 `wiki_generator/`
   - **验证**: 项目结构图反映新目录名
