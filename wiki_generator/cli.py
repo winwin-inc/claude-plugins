@@ -22,28 +22,12 @@ import os
 import shutil
 from pathlib import Path
 
-# 包数据文件访问（跨 Python 版本兼容）
-try:
-    # Python 3.9+
-    from importlib.resources import files as _files
-    def _get_package_data(path: str) -> Path:
-        """获取包内数据文件路径"""
-        return Path(str(_files('wiki_generator') / path))
-except ImportError:
-    # Python 3.8
-    from pkg_resources import resource_filename
-    def _get_package_data(path: str) -> Path:
-        """获取包内数据文件路径"""
-        return Path(resource_filename('wiki_generator', path))
-
 
 def get_package_claude_dir():
     """
     获取 wiki-generator 包内的 .claude/ 目录路径
 
-    工作原理：
-    1. 首先尝试从包内读取（uv tool install 后的情况）
-    2. 如果失败，回退到项目根目录（开发模式）
+    .claude 目录位于 wiki_generator 包内，开发模式和安装模式路径一致。
 
     Returns:
         Path: .claude/ 目录的绝对路径
@@ -51,18 +35,9 @@ def get_package_claude_dir():
     Raises:
         RuntimeError: 如果 .claude/ 目录不存在
     """
-    # 方法 1: 尝试从已安装的包内读取
-    try:
-        claude_dir = _get_package_data('.claude')
-        if claude_dir.exists():
-            return claude_dir
-    except Exception:
-        pass
-
-    # 方法 2: 回退到项目根目录（开发模式）
-    # 获取项目根目录（wiki_generator/ 的上一级）
-    project_root = Path(__file__).parent.parent.resolve()
-    claude_dir = project_root / ".claude"
+    # 获取 wiki_generator 包目录
+    package_dir = Path(__file__).parent.resolve()
+    claude_dir = package_dir / ".claude"
 
     if not claude_dir.exists():
         raise RuntimeError(
