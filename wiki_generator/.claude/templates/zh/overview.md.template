@@ -1,0 +1,62 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 项目概述
+
+{project_description}
+
+### 项目背景
+
+{project_background}
+
+### 项目目标
+
+{project_goals}
+
+**Section sources**
+{overview_sources}
+
+## 核心特性
+
+{core_features}
+
+**Section sources**
+{features_sources}
+
+## 应用场景
+
+{use_cases}
+
+**Section sources**
+{use_cases_sources}
+
+## 架构概览
+
+{architecture_overview}
+
+**Section sources**
+{architecture_sources}
+
+## 技术选型
+
+{technology_choices}
+
+**Section sources**
+{tech_choices_sources}
+
+## 项目状态
+
+{project_status}
+
+---
+
+## 参考来源
+
+{sources}

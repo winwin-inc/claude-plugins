@@ -1,0 +1,64 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Technology Stack Overview
+
+{techstack_summary}
+
+**Section sources**
+{techstack_summary_sources}
+
+## Programming Languages
+
+{programming_languages}
+
+**Section sources**
+{languages_sources}
+
+## Core Frameworks
+
+{core_frameworks}
+
+**Section sources**
+{frameworks_sources}
+
+## Data Storage
+
+{data_storage}
+
+**Section sources**
+{data_storage_sources}
+
+## Third-party Libraries
+
+{third_party_libraries}
+
+**Section sources**
+{libraries_sources}
+
+## Development Tools
+
+{development_tools}
+
+**Section sources**
+{dev_tools_sources}
+
+## Dependency Management
+
+{dependency_management}
+
+**Section sources**
+{dependency_sources}
+
+---
+
+## Reference Sources
+
+{sources}

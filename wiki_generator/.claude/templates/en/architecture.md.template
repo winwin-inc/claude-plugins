@@ -1,0 +1,66 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## System Architecture
+
+{system_architecture}
+
+**Section sources**
+{system_arch_sources}
+
+## Architecture Diagram
+
+```mermaid
+{architecture_diagram}
+```
+
+**Section sources**
+{diagram_sources}
+
+## Core Components
+
+{core_components}
+
+**Section sources**
+{components_sources}
+
+## Module Organization
+
+{module_organization}
+
+**Section sources**
+{modules_sources}
+
+## Data Flow
+
+{data_flow}
+
+**Section sources**
+{data_flow_sources}
+
+## Design Patterns
+
+{design_patterns}
+
+**Section sources**
+{patterns_sources}
+
+## Scalability Considerations
+
+{scalability_considerations}
+
+**Section sources**
+{scalability_sources}
+
+---
+
+## Reference Sources
+
+{sources}

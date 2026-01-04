@@ -1,0 +1,60 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Data Model Overview
+
+{datamodel_summary}
+
+**Section sources**
+{datamodel_summary_sources}
+
+## Core Entities
+
+{core_entities}
+
+**Section sources**
+{entities_sources}
+
+## Data Relationships
+
+```mermaid
+erDiagram
+{data_relationships}
+```
+
+**Section sources**
+{relationships_sources}
+
+## Data Dictionary
+
+{data_dictionary}
+
+**Section sources**
+{dictionary_sources}
+
+## Validation Rules
+
+{validation_rules}
+
+**Section sources**
+{validation_sources}
+
+## Persistence Strategy
+
+{persistence_strategy}
+
+**Section sources**
+{persistence_sources}
+
+---
+
+## Reference Sources
+
+{sources}

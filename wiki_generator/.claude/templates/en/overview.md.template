@@ -1,0 +1,62 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Project Overview
+
+{project_description}
+
+### Background
+
+{project_background}
+
+### Goals
+
+{project_goals}
+
+**Section sources**
+{overview_sources}
+
+## Key Features
+
+{core_features}
+
+**Section sources**
+{features_sources}
+
+## Use Cases
+
+{use_cases}
+
+**Section sources**
+{use_cases_sources}
+
+## Architecture Overview
+
+{architecture_overview}
+
+**Section sources**
+{architecture_sources}
+
+## Technology Choices
+
+{technology_choices}
+
+**Section sources**
+{tech_choices_sources}
+
+## Project Status
+
+{project_status}
+
+---
+
+## Reference Sources
+
+{sources}

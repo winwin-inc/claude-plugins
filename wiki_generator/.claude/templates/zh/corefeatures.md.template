@@ -1,0 +1,75 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 核心功能概览
+
+{features_overview}
+
+**Section sources**
+{overview_sources}
+
+## 功能列表
+
+{features_list}
+
+**Section sources**
+{features_list_sources}
+
+## 功能详解
+
+### {feature_1_title}
+
+{feature_1_description}
+
+**实现细节**:
+{feature_1_implementation}
+
+**Section sources**
+{feature_1_sources}
+
+### {feature_2_title}
+
+{feature_2_description}
+
+**实现细节**:
+{feature_2_implementation}
+
+**Section sources**
+{feature_2_sources}
+
+### {feature_3_title}
+
+{feature_3_description}
+
+**实现细节**:
+{feature_3_implementation}
+
+**Section sources**
+{feature_3_sources}
+
+## 功能交互
+
+{feature_interactions}
+
+**Section sources**
+{interactions_sources}
+
+## 性能考虑
+
+{performance_considerations}
+
+**Section sources**
+{performance_sources}
+
+---
+
+## 参考来源
+
+{sources}

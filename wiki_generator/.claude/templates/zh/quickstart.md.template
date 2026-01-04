@@ -1,0 +1,67 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 简介
+
+{overview_summary}
+
+**Section sources**
+{section_sources}
+
+## 前置要求
+
+在开始使用 {project_name} 之前，请确保您的系统满足以下先决条件：
+
+### 系统要求
+{system_requirements}
+
+### 依赖软件
+{dependencies}
+
+**Section sources**
+{prerequisites_sources}
+
+## 快速开始
+
+### 安装
+
+{installation_steps}
+
+### 配置
+
+{configuration_steps}
+
+### 验证安装
+
+{verification_steps}
+
+**Section sources**
+{getting_started_sources}
+
+## 第一个示例
+
+{first_example}
+
+**Section sources**
+{first_example_sources}
+
+## 下一步
+
+{next_steps}
+
+## 常见问题
+
+{faq}
+
+---
+
+## 参考来源
+
+{sources}

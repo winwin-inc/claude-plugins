@@ -1,0 +1,80 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Common Issues
+
+### Issue 1: {problem_1_title}
+
+**Symptoms**:
+{problem_1_symptoms}
+
+**Cause**:
+{problem_1_cause}
+
+**Solution**:
+{problem_1_solution}
+
+**Section sources**
+{problem_1_sources}
+
+### Issue 2: {problem_2_title}
+
+**Symptoms**:
+{problem_2_symptoms}
+
+**Cause**:
+{problem_2_cause}
+
+**Solution**:
+{problem_2_solution}
+
+**Section sources**
+{problem_2_sources}
+
+### Issue 3: {problem_3_title}
+
+**Symptoms**:
+{problem_3_symptoms}
+
+**Cause**:
+{problem_3_cause}
+
+**Solution**:
+{problem_3_solution}
+
+**Section sources**
+{problem_3_sources}
+
+## Debugging Tips
+
+{debugging_tips}
+
+**Section sources**
+{debugging_sources}
+
+## Log Analysis
+
+{log_analysis}
+
+**Section sources**
+{log_analysis_sources}
+
+## Getting Help
+
+{getting_help}
+
+**Section sources**
+{help_sources}
+
+---
+
+## Reference Sources
+
+{sources}

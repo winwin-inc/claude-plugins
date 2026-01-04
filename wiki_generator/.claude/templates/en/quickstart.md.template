@@ -1,0 +1,67 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Introduction
+
+{overview_summary}
+
+**Section sources**
+{section_sources}
+
+## Prerequisites
+
+Before you start using {project_name}, ensure your system meets the following requirements:
+
+### System Requirements
+{system_requirements}
+
+### Dependencies
+{dependencies}
+
+**Section sources**
+{prerequisites_sources}
+
+## Quick Start
+
+### Installation
+
+{installation_steps}
+
+### Configuration
+
+{configuration_steps}
+
+### Verify Installation
+
+{verification_steps}
+
+**Section sources**
+{getting_started_sources}
+
+## First Example
+
+{first_example}
+
+**Section sources**
+{first_example_sources}
+
+## Next Steps
+
+{next_steps}
+
+## FAQ
+
+{faq}
+
+---
+
+## Reference Sources
+
+{sources}

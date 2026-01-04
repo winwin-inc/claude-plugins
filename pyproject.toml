@@ -26,6 +26,7 @@ dependencies = [
     "click>=8.0.0",
     "pyyaml>=6.0",
     "requests>=2.28.0",
+    "jsonschema>=4.20.0",
 ]
 
 [project.optional-dependencies]
@@ -36,7 +37,7 @@ dev = [
 ]
 
 [project.scripts]
-wiki-generator = "wiki_generator.cli:cli"
+wiki-generator = "wiki_generator.cli_v2:cli"
 
 [project.urls]
 Homepage = "https://github.com/user/repo-wiki"

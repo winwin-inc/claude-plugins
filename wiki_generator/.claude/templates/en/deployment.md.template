@@ -1,0 +1,73 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Deployment Overview
+
+{deployment_overview}
+
+**Section sources**
+{overview_sources}
+
+## Environment Requirements
+
+{environment_requirements}
+
+**Section sources**
+{requirements_sources}
+
+## Deployment Methods
+
+### Method 1: {deployment_method_1}
+
+{deployment_method_1_details}
+
+**Section sources**
+{method_1_sources}
+
+### Method 2: {deployment_method_2}
+
+{deployment_method_2_details}
+
+**Section sources**
+{method_2_sources}
+
+## Configuration Management
+
+{configuration_management}
+
+**Section sources**
+{config_sources}
+
+## Deployment Steps
+
+{deployment_steps}
+
+**Section sources**
+{steps_sources}
+
+## Health Checks
+
+{health_checks}
+
+**Section sources**
+{health_checks_sources}
+
+## Rollback Strategy
+
+{rollback_strategy}
+
+**Section sources**
+{rollback_sources}
+
+---
+
+## Reference Sources
+
+{sources}

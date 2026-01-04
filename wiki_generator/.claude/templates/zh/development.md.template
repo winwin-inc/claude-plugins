@@ -1,0 +1,64 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 开发环境设置
+
+{development_setup}
+
+**Section sources**
+{setup_sources}
+
+## 项目结构
+
+{project_structure}
+
+**Section sources**
+{structure_sources}
+
+## 编码规范
+
+{coding_standards}
+
+**Section sources**
+{standards_sources}
+
+## 调试指南
+
+{debugging_guide}
+
+**Section sources**
+{debugging_sources}
+
+## 测试
+
+{testing_guide}
+
+**Section sources**
+{testing_sources}
+
+## 构建和打包
+
+{build_and_package}
+
+**Section sources**
+{build_sources}
+
+## 贡献指南
+
+{contributing_guide}
+
+**Section sources**
+{contributing_sources}
+
+---
+
+## 参考来源
+
+{sources}

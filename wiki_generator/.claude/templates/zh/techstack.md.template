@@ -1,0 +1,64 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 技术栈概览
+
+{techstack_summary}
+
+**Section sources**
+{techstack_summary_sources}
+
+## 编程语言
+
+{programming_languages}
+
+**Section sources**
+{languages_sources}
+
+## 核心框架
+
+{core_frameworks}
+
+**Section sources**
+{frameworks_sources}
+
+## 数据存储
+
+{data_storage}
+
+**Section sources**
+{data_storage_sources}
+
+## 第三方库
+
+{third_party_libraries}
+
+**Section sources**
+{libraries_sources}
+
+## 开发工具
+
+{development_tools}
+
+**Section sources**
+{dev_tools_sources}
+
+## 依赖管理
+
+{dependency_management}
+
+**Section sources**
+{dependency_sources}
+
+---
+
+## 参考来源
+
+{sources}

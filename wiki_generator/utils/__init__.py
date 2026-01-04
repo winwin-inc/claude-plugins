@@ -11,6 +11,7 @@ from .git_helper import GitHelper
 from .file_helper import FileHelper
 from .metadata import MetadataExtractor
 from .errors import ErrorCode
+from . import logger
 
 __all__ = [
     "validate_command_name",
@@ -26,4 +27,5 @@ __all__ = [
     "FileHelper",
     "MetadataExtractor",
     "ErrorCode",
+    "logger",
 ]

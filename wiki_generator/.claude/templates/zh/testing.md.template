@@ -1,0 +1,80 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 测试策略
+
+{testing_strategy}
+
+**Section sources**
+{strategy_sources}
+
+## 测试类型
+
+### 单元测试
+
+{unit_tests}
+
+**Section sources**
+{unit_tests_sources}
+
+### 集成测试
+
+{integration_tests}
+
+**Section sources**
+{integration_tests_sources}
+
+### 端到端测试
+
+{e2e_tests}
+
+**Section sources**
+{e2e_tests_sources}
+
+### 性能测试
+
+{performance_tests}
+
+**Section sources**
+{performance_tests_sources}
+
+## 测试工具
+
+{testing_tools}
+
+**Section sources**
+{tools_sources}
+
+## 测试覆盖率
+
+{test_coverage}
+
+**Section sources**
+{coverage_sources}
+
+## 运行测试
+
+{running_tests}
+
+**Section sources**
+{running_tests_sources}
+
+## 持续集成
+
+{continuous_integration}
+
+**Section sources**
+{ci_sources}
+
+---
+
+## 参考来源
+
+{sources}

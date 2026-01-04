@@ -1,0 +1,60 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 数据模型概览
+
+{datamodel_summary}
+
+**Section sources**
+{datamodel_summary_sources}
+
+## 核心实体
+
+{core_entities}
+
+**Section sources**
+{entities_sources}
+
+## 数据关系
+
+```mermaid
+erDiagram
+{data_relationships}
+```
+
+**Section sources**
+{relationships_sources}
+
+## 数据字典
+
+{data_dictionary}
+
+**Section sources**
+{dictionary_sources}
+
+## 数据验证规则
+
+{validation_rules}
+
+**Section sources**
+{validation_sources}
+
+## 数据持久化
+
+{persistence_strategy}
+
+**Section sources**
+{persistence_sources}
+
+---
+
+## 参考来源
+
+{sources}

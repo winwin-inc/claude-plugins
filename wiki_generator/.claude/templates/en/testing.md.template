@@ -1,0 +1,80 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Testing Strategy
+
+{testing_strategy}
+
+**Section sources**
+{strategy_sources}
+
+## Test Types
+
+### Unit Tests
+
+{unit_tests}
+
+**Section sources**
+{unit_tests_sources}
+
+### Integration Tests
+
+{integration_tests}
+
+**Section sources**
+{integration_tests_sources}
+
+### End-to-End Tests
+
+{e2e_tests}
+
+**Section sources**
+{e2e_tests_sources}
+
+### Performance Tests
+
+{performance_tests}
+
+**Section sources**
+{performance_tests_sources}
+
+## Testing Tools
+
+{testing_tools}
+
+**Section sources**
+{tools_sources}
+
+## Test Coverage
+
+{test_coverage}
+
+**Section sources**
+{coverage_sources}
+
+## Running Tests
+
+{running_tests}
+
+**Section sources**
+{running_tests_sources}
+
+## Continuous Integration
+
+{continuous_integration}
+
+**Section sources**
+{ci_sources}
+
+---
+
+## Reference Sources
+
+{sources}

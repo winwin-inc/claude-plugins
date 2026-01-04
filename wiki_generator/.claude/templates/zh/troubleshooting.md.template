@@ -1,0 +1,80 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 常见问题
+
+### 问题 1：{problem_1_title}
+
+**症状**:
+{problem_1_symptoms}
+
+**原因**:
+{problem_1_cause}
+
+**解决方案**:
+{problem_1_solution}
+
+**Section sources**
+{problem_1_sources}
+
+### 问题 2：{problem_2_title}
+
+**症状**:
+{problem_2_symptoms}
+
+**原因**:
+{problem_2_cause}
+
+**解决方案**:
+{problem_2_solution}
+
+**Section sources**
+{problem_2_sources}
+
+### 问题 3：{problem_3_title}
+
+**症状**:
+{problem_3_symptoms}
+
+**原因**:
+{problem_3_cause}
+
+**解决方案**:
+{problem_3_solution}
+
+**Section sources**
+{problem_3_sources}
+
+## 调试技巧
+
+{debugging_tips}
+
+**Section sources**
+{debugging_sources}
+
+## 日志分析
+
+{log_analysis}
+
+**Section sources**
+{log_analysis_sources}
+
+## 获取帮助
+
+{getting_help}
+
+**Section sources**
+{help_sources}
+
+---
+
+## 参考来源
+
+{sources}

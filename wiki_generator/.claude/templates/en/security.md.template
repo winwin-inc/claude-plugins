@@ -1,0 +1,71 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Security Overview
+
+{security_overview}
+
+**Section sources**
+{overview_sources}
+
+## Authentication and Authorization
+
+{authentication_and_authorization}
+
+**Section sources**
+{auth_sources}
+
+## Data Protection
+
+{data_protection}
+
+**Section sources**
+{data_protection_sources}
+
+## Encryption
+
+{encryption}
+
+**Section sources**
+{encryption_sources}
+
+## Input Validation
+
+{input_validation}
+
+**Section sources**
+{validation_sources}
+
+## Security Configuration
+
+{security_configuration}
+
+**Section sources**
+{config_sources}
+
+## Vulnerability Management
+
+{vulnerability_management}
+
+**Section sources**
+{vulnerability_sources}
+
+## Security Best Practices
+
+{security_best_practices}
+
+**Section sources**
+{best_practices_sources}
+
+---
+
+## Reference Sources
+
+{sources}

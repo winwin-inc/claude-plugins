@@ -1,0 +1,64 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Development Setup
+
+{development_setup}
+
+**Section sources**
+{setup_sources}
+
+## Project Structure
+
+{project_structure}
+
+**Section sources**
+{structure_sources}
+
+## Coding Standards
+
+{coding_standards}
+
+**Section sources**
+{standards_sources}
+
+## Debugging Guide
+
+{debugging_guide}
+
+**Section sources**
+{debugging_sources}
+
+## Testing
+
+{testing_guide}
+
+**Section sources**
+{testing_sources}
+
+## Build and Package
+
+{build_and_package}
+
+**Section sources**
+{build_sources}
+
+## Contributing Guide
+
+{contributing_guide}
+
+**Section sources**
+{contributing_sources}
+
+---
+
+## Reference Sources
+
+{sources}

@@ -1,0 +1,75 @@
+# {title}
+
+<cite>
+**Files cited in this document**
+{cite_files}
+</cite>
+
+## Table of Contents
+{toc}
+
+## Features Overview
+
+{features_overview}
+
+**Section sources**
+{overview_sources}
+
+## Feature List
+
+{features_list}
+
+**Section sources**
+{features_list_sources}
+
+## Feature Details
+
+### {feature_1_title}
+
+{feature_1_description}
+
+**Implementation Details**:
+{feature_1_implementation}
+
+**Section sources**
+{feature_1_sources}
+
+### {feature_2_title}
+
+{feature_2_description}
+
+**Implementation Details**:
+{feature_2_implementation}
+
+**Section sources**
+{feature_2_sources}
+
+### {feature_3_title}
+
+{feature_3_description}
+
+**Implementation Details**:
+{feature_3_implementation}
+
+**Section sources**
+{feature_3_sources}
+
+## Feature Interactions
+
+{feature_interactions}
+
+**Section sources**
+{interactions_sources}
+
+## Performance Considerations
+
+{performance_considerations}
+
+**Section sources**
+{performance_sources}
+
+---
+
+## Reference Sources
+
+{sources}

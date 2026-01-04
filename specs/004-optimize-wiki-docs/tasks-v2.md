@@ -48,11 +48,11 @@
 
 ### 任务
 
-- [ ] T001 创建新的模块目录结构在 wiki_generator/ 下
-- [ ] T002 [P] 在 wiki_generator/models/ 中创建 config_models.py，定义 WikiConfig, SectionConfig, TemplateInfo, TemplateManifest 等数据类
-- [ ] T003 [P] 在 wiki_generator/utils/ 中创建 file_utils.py，实现文件安装和路径计算工具函数
-- [ ] T004 [P] 更新 pyproject.toml 添加 jsonschema 依赖（配置验证）
-- [ ] T005 [P] 创建测试目录结构 tests/test_v2/ 和初始测试文件
+- [X] T001 创建新的模块目录结构在 wiki_generator/ 下
+- [X] T002 [P] 在 wiki_generator/models/ 中创建 config_models.py，定义 WikiConfig, SectionConfig, TemplateInfo, TemplateManifest 等数据类
+- [X] T003 [P] 在 wiki_generator/utils/ 中创建 file_utils.py，实现文件安装和路径计算工具函数
+- [X] T004 [P] 更新 pyproject.toml 添加 jsonschema 依赖（配置验证）
+- [X] T005 [P] 创建测试目录结构 tests/test_v2/ 和初始测试文件
 
 ### 验收标准
 - ✅ 模块目录结构创建完成
@@ -68,10 +68,10 @@
 
 ### 任务
 
-- [ ] T006 实现 JSON Schema 加载器在 wiki_generator/core/schema_loader.py
-- [ ] T007 实现配置验证器在 wiki_generator/core/config_validator.py，支持 jsonschema 验证
-- [ ] T008 实现模板清单管理器在 wiki_generator/core/template_manifest.py
-- [ ] T009 实现文件安装器在 wiki_generator/core/installer.py，支持复制 .claude/ 目录
+- [X] T006 实现 JSON Schema 加载器在 wiki_generator/core/schema_loader.py
+- [X] T007 实现配置验证器在 wiki_generator/core/config_validator.py，支持 jsonschema 验证
+- [X] T008 实现模板清单管理器在 wiki_generator/core/template_manifest.py
+- [X] T009 实现文件安装器在 wiki_generator/core/installer_v2.py，支持复制 .claude/ 目录
 
 ### 验收标准
 - ✅ JSON Schema 可以正确加载
@@ -95,35 +95,35 @@
 
 #### 中文模板（11 个）
 
-- [ ] T010 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/quickstart.md.template，包含统一的页头结构（<cite>、目录、Section sources）和变量占位符
-- [ ] T011 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/overview.md.template
-- [ ] T012 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/techstack.md.template
-- [ ] T013 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/architecture.md.template
-- [ ] T014 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/datamodel.md.template
-- [ ] T015 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/corefeatures.md.template
-- [ ] T016 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/development.md.template
-- [ ] T017 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/deployment.md.template
-- [ ] T018 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/testing.md.template
-- [ ] T019 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/troubleshooting.md.template
-- [ ] T020 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/security.md.template
+- [X] T010 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/quickstart.md.template，包含统一的页头结构（<cite>、目录、Section sources）和变量占位符
+- [X] T011 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/overview.md.template
+- [X] T012 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/techstack.md.template
+- [X] T013 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/architecture.md.template
+- [X] T014 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/datamodel.md.template
+- [X] T015 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/corefeatures.md.template
+- [X] T016 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/development.md.template
+- [X] T017 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/deployment.md.template
+- [X] T018 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/testing.md.template
+- [X] T019 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/troubleshooting.md.template
+- [X] T020 [P] [FR-04] 创建 wiki_generator/.claude/templates/zh/security.md.template
 
 #### 英文模板（11 个）
 
-- [ ] T021 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/quickstart.md.template
-- [ ] T022 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/overview.md.template
-- [ ] T023 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/techstack.md.template
-- [ ] T024 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/architecture.md.template
-- [ ] T025 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/datamodel.md.template
-- [ ] T026 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/corefeatures.md.template
-- [ ] T027 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/development.md.template
-- [ ] T028 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/deployment.md.template
-- [ ] T029 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/testing.md.template
-- [ ] T030 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/troubleshooting.md.template
-- [ ] T031 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/security.md.template
+- [X] T021 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/quickstart.md.template
+- [X] T022 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/overview.md.template
+- [X] T023 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/techstack.md.template
+- [X] T024 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/architecture.md.template
+- [X] T025 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/datamodel.md.template
+- [X] T026 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/corefeatures.md.template
+- [X] T027 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/development.md.template
+- [X] T028 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/deployment.md.template
+- [X] T029 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/testing.md.template
+- [X] T030 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/troubleshooting.md.template
+- [X] T031 [P] [FR-04] 创建 wiki_generator/.claude/templates/en/security.md.template
 
 #### 模板规范文档
 
-- [ ] T032 [FR-04] 创建模板格式规范在 wiki_generator/.claude/templates/TEMPLATE_FORMAT.md，说明变量语法、Claude 指导注释、结构约定
+- [X] T032 [FR-04] 创建模板格式规范在 wiki_generator/.claude/templates/TEMPLATE_FORMAT.md，说明变量语法、Claude 指导注释、结构约定
 
 ### 验收标准
 
@@ -159,18 +159,18 @@ grep -r "{title}" wiki_generator/.claude/templates/  # 验证变量占位符
 
 #### JSON Schema
 
-- [ ] T033 [P] [FR-07] 创建 JSON Schema 文件在 wiki_generator/.claude/schema/wiki-config-schema.json，定义所有配置字段和验证规则
+- [X] T033 [P] [FR-07] 创建 JSON Schema 文件在 wiki_generator/.claude/schema/wiki-config-schema.json，定义所有配置字段和验证规则
 
 #### 配置验证模块
 
-- [ ] T034 [P] [FR-07] 实现中文错误消息格式化在 wiki_generator/core/config_validator.py:format_error_chinese()
-- [ ] T035 [P] [FR-07] 实现配置文件加载在 wiki_generator/core/config_validator.py:load_config()
-- [ ] T036 [FR-07] 实现配置验证逻辑在 wiki_generator/core/config_validator.py:validate_config()
+- [X] T034 [P] [FR-07] 实现中文错误消息格式化在 wiki_generator/core/config_validator.py:_translate_error_message()
+- [X] T035 [P] [FR-07] 实现配置文件加载在 wiki_generator/core/config_initializer.py:load_config_from_file()
+- [X] T036 [FR-07] 实现配置验证逻辑在 wiki_generator/core/config_validator.py:validate_config_file()
 
 #### 初始化命令
 
-- [ ] T037 [P] [FR-07] 实现默认配置生成在 wiki_generator/core/config_initializer.py:create_default_config()
-- [ ] T038 [FR-07] 实现配置文件写入在 wiki_generator/core/config_initializer.py:write_config()
+- [X] T037 [P] [FR-07] 实现默认配置生成在 wiki_generator/core/config_initializer.py:create_default_config()
+- [X] T038 [FR-07] 实现配置文件写入在 wiki_generator/core/config_initializer.py:write_config()
 
 ### 验收标准
 
@@ -244,29 +244,59 @@ cat .claude/wiki-config.json.backup  # 备份文件应该存在
 
 #### CLI 命令实现
 
-- [ ] T045 实现主 CLI 命令在 wiki_generator/cli.py:cli()
-- [ ] T046 [P] 实现 --init 子命令在 wiki_generator/cli.py:init_command()
-- [ ] T047 [P] 实现 --validate 子命令在 wiki_generator/cli.py:validate_command()
-- [ ] T048 [P] 实现 --migrate 子命令在 wiki_generator/cli.py:migrate_command()
-- [ ] T049 [P] 实现 --version 子命令在 wiki_generator/cli.py:version_command()
+- [X] T045 实现主 CLI 命令在 wiki_generator/cli_v2.py:cli()
+- [X] T046 [P] 实现 --init 子命令在 wiki_generator/cli_v2.py:init()
+- [X] T047 [P] 实现 --validate 子命令在 wiki_generator/cli_v2.py:validate()
+- [X] T048 [P] 实现 --migrate 子命令在 wiki_generator/cli_v2.py:migrate()
+- [X] T049 [P] 实现 --version 子命令在 wiki_generator/cli_v2.py:version()
 
 #### 文件安装集成
 
-- [ ] T050 实现 .claude/ 目录安装逻辑在 wiki_generator/cli.py:init_command()
-- [ ] T051 实现用户确认提示（覆盖检测）在 wiki_generator/core/installer.py:confirm_overwrite()
-- [ ] T052 实现模板版本记录在 wiki_generator/core/installer.py:record_template_version()
+- [X] T050 实现 .claude/ 目录安装逻辑在 wiki_generator/cli_v2.py:init()
+- [X] T051 实现用户确认提示（覆盖检测）在 wiki_generator/core/installer_v2.py:confirm_overwrite()
+- [X] T052 实现模板版本记录在 wiki_generator/core/installer_v2.py:_get_template_version()
 
 #### 错误处理
 
-- [ ] T053 实现统一的错误处理在 wiki_generator/core/errors.py
-- [ ] T054 添加用户友好的错误消息在 wiki_generator/cli.py
-- [ ] T055 实现日志输出在 wiki_generator/utils/logging.py
+- [X] T053 实现统一的错误处理在 wiki_generator/core/errors.py
+- [X] T054 添加用户友好的错误消息在 wiki_generator/cli_v2.py
+- [X] T055 实现日志输出在 wiki_generator/utils/logger.py
 
 ### 验收标准
 - ✅ 所有子命令正常工作
 - ✅ 错误处理完善，消息清晰
 - ✅ 文件安装安全（备份、确认）
 - ✅ 版本管理正确
+
+---
+
+## Phase 6.5: wiki-generate.md 命令文件重写（FR-12）
+
+### 目标
+完全重写 `.claude/commands/wiki-generate.md` 以匹配规范 v2.0
+
+### 任务
+
+- [X] T056 [FR-12] 完全重写 wiki-generate.md 命令文件，移除所有 v1.0 逻辑
+- [X] T057 [FR-12] 实现配置文件读取和验证逻辑
+- [X] T058 [FR-12] 实现技术栈显式检测规则（SQLAlchemy、FastAPI、Celery 等）
+- [X] T059 [FR-12] 实现分层目录结构生成（docs/{lang}/content/00-序号-文档名.md）
+- [X] T060 [FR-12] 实现中文文件名策略（快速开始.md、项目概述.md）
+- [X] T061 [FR-12] 实现完全覆盖文档生成策略
+- [X] T062 [FR-12] 实现部分成功错误处理机制
+- [X] T063 [FR-12] 实现基础自动化验证（<cite> 块、目录、Section sources）
+- [X] T064 [FR-12] 更新命令文件元数据（description、argument-hint、allowed-tools）
+- [ ] T065 [FR-12] 测试 wiki-generate.md 命令文件功能
+
+### 验收标准
+- ✅ wiki-generate.md 完全重写，无 v1.0 遗留代码
+- ✅ 支持配置文件读取和验证
+- ✅ 技术栈检测准确（SQLAlchemy→数据模型，FastAPI→API）
+- ✅ 生成分层目录结构
+- ✅ 使用中文文件名
+- ✅ 每个文档包含必需元素
+- ✅ 部分成功错误处理正常工作
+- ✅ 基础自动化验证通过
 
 ---
 
@@ -279,30 +309,30 @@ cat .claude/wiki-config.json.backup  # 备份文件应该存在
 
 #### 单元测试
 
-- [ ] T056 [P] 编写配置验证测试在 tests/test_v2/test_config_validator.py
-- [ ] T057 [P] 编写迁移工具测试在 tests/test_v2/test_migrator.py
-- [ ] T058 [P] 编写文件安装测试在 tests/test_v2/test_installer.py
-- [ ] T059 [P] 编写模板清单测试在 tests/test_v2/test_template_manifest.py
-- [ ] T060 [P] 编写 CLI 命令测试在 tests/test_v2/test_cli.py
+- [ ] T066 [P] 编写配置验证测试在 tests/test_v2/test_config_validator.py
+- [ ] T067 [P] 编写迁移工具测试在 tests/test_v2/test_migrator.py
+- [ ] T068 [P] 编写文件安装测试在 tests/test_v2/test_installer.py
+- [ ] T069 [P] 编写模板清单测试在 tests/test_v2/test_template_manifest.py
+- [ ] T070 [P] 编写 CLI 命令测试在 tests/test_v2/test_cli.py
 
 #### 集成测试
 
-- [ ] T061 编写完整初始化流程测试在 tests/test_v2/test_integration_init.py
-- [ ] T062 编写配置验证流程测试在 tests/test_v2/test_integration_validate.py
-- [ ] T063 编写迁移流程测试在 tests/test_v2/test_integration_migrate.py
+- [ ] T071 编写完整初始化流程测试在 tests/test_v2/test_integration_init.py
+- [ ] T072 编写配置验证流程测试在 tests/test_v2/test_integration_validate.py
+- [ ] T073 编写迁移流程测试在 tests/test_v2/test_integration_migrate.py
 
 #### 用户文档
 
-- [ ] T064 [P] 更新 README.md 添加新功能说明和 v2.0 架构介绍
-- [ ] T065 [P] 创建 USAGE.md 详细使用指南
-- [ ] T066 [P] 更新 CLAUDE.md 项目指南
-- [ ] T067 创建 CHANGELOG.md 记录 v2.0 变更
+- [X] T074 [P] 更新 README.md 添加新功能说明和 v2.0 架构介绍
+- [ ] T075 [P] 创建 USAGE.md 详细使用指南
+- [ ] T076 [P] 更新 CLAUDE.md 项目指南
+- [ ] T077 创建 CHANGELOG.md 记录 v2.0 变更
 
 #### 性能测试
 
-- [ ] T068 性能测试：初始化性能 < 3 秒
-- [ ] T069 性能测试：配置验证 < 1 秒
-- [ ] T070 性能测试：配置迁移 < 2 秒
+- [ ] T078 性能测试：初始化性能 < 3 秒
+- [ ] T079 性能测试：配置验证 < 1 秒
+- [ ] T080 性能测试：配置迁移 < 2 秒
 
 ### 验收标准
 - ✅ 所有测试通过
@@ -319,11 +349,11 @@ cat .claude/wiki-config.json.backup  # 备份文件应该存在
 
 ### 任务
 
-- [ ] T071 更新版本号到 2.0.0 在 pyproject.toml
-- [ ] T072 创建发布说明在 RELEASE_NOTES.md
-- [ ] T073 清理旧版本文档（v1.0）或移到 archive/
-- [ ] T074 创建 Git tag 和发布
-- [ ] T075 验证发布包（uv build && test_build.py）
+- [ ] T081 更新版本号到 2.0.0 在 pyproject.toml
+- [ ] T082 创建发布说明在 RELEASE_NOTES.md
+- [ ] T083 清理旧版本文档（v1.0）或移到 archive/
+- [ ] T084 创建 Git tag 和发布
+- [ ] T085 验证发布包（uv build && test_build.py）
 
 ### 验收标准
 - ✅ 版本号正确

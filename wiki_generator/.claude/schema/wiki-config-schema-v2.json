@@ -1,0 +1,125 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://repo-wiki.dev/schemas/wiki-config-schema-v2.json",
+  "title": "Wiki Generator Configuration Schema v2.0",
+  "description": "配置文件 schema，用于验证 .claude/wiki-config.json（Python 包职责：安装、验证、迁移）",
+  "type": "object",
+  "required": ["language"],
+  "properties": {
+    "output_dir": {
+      "description": "文档输出目录",
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[^<>:\"|?*]+$",
+      "default": "docs"
+    },
+    "language": {
+      "description": "文档语言配置",
+      "type": "string",
+      "enum": ["zh", "en", "both"],
+      "default": "zh"
+    },
+    "structure_template": {
+      "description": "文档结构模板",
+      "type": "string",
+      "enum": ["reference", "simple", "custom"],
+      "default": "reference"
+    },
+    "include_sources": {
+      "description": "是否包含 Section sources（由 Claude Code 命令生成）",
+      "type": "boolean",
+      "default": true
+    },
+    "generate_toc": {
+      "description": "是否生成目录索引（由 Claude Code 命令生成）",
+      "type": "boolean",
+      "default": true
+    },
+    "sections": {
+      "description": "文档章节配置",
+      "type": "object",
+      "properties": {
+        "required": {
+          "description": "必需文档列表（Claude Code 命令将生成这些文档）",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "quickstart",
+              "overview",
+              "techstack",
+              "architecture",
+              "datamodel",
+              "corefeatures",
+              "development",
+              "deployment",
+              "testing",
+              "troubleshooting",
+              "security"
+            ]
+          },
+          "default": [
+            "quickstart",
+            "overview",
+            "techstack",
+            "architecture",
+            "development",
+            "deployment",
+            "testing",
+            "troubleshooting",
+            "security"
+          ]
+        },
+        "optional": {
+          "description": "可选文档列表（Claude Code 命令根据项目特征决定是否生成）",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enum": [
+              "datamodel",
+              "corefeatures"
+            ]
+          },
+          "default": [
+            "datamodel",
+            "corefeatures"
+          ]
+        }
+      }
+    },
+    "version": {
+      "description": "配置文件版本号（用于迁移）",
+      "type": "string",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    }
+  },
+  "if": {
+    "properties": {
+      "structure_template": {
+        "const": "custom"
+      }
+    },
+    "required": ["structure_template"]
+  },
+  "then": {
+    "required": ["sections"]
+  },
+  "definitions": {
+    "documentTypes": {
+      "type": "string",
+      "enum": [
+        "quickstart",
+        "overview",
+        "techstack",
+        "architecture",
+        "datamodel",
+        "corefeatures",
+        "development",
+        "deployment",
+        "testing",
+        "troubleshooting",
+        "security"
+      ]
+    }
+  }
+}

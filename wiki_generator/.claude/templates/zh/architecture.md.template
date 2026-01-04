@@ -1,0 +1,66 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 系统架构
+
+{system_architecture}
+
+**Section sources**
+{system_arch_sources}
+
+## 架构图
+
+```mermaid
+{architecture_diagram}
+```
+
+**Section sources**
+{diagram_sources}
+
+## 核心组件
+
+{core_components}
+
+**Section sources**
+{components_sources}
+
+## 模块划分
+
+{module_organization}
+
+**Section sources**
+{modules_sources}
+
+## 数据流
+
+{data_flow}
+
+**Section sources**
+{data_flow_sources}
+
+## 设计模式
+
+{design_patterns}
+
+**Section sources**
+{patterns_sources}
+
+## 扩展性考虑
+
+{scalability_considerations}
+
+**Section sources**
+{scalability_sources}
+
+---
+
+## 参考来源
+
+{sources}

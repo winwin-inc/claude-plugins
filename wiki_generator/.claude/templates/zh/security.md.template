@@ -1,0 +1,71 @@
+# {title}
+
+<cite>
+**本文档中引用的文件**
+{cite_files}
+</cite>
+
+## 目录
+{toc}
+
+## 安全概览
+
+{security_overview}
+
+**Section sources**
+{overview_sources}
+
+## 认证和授权
+
+{authentication_and_authorization}
+
+**Section sources**
+{auth_sources}
+
+## 数据保护
+
+{data_protection}
+
+**Section sources**
+{data_protection_sources}
+
+## 加密
+
+{encryption}
+
+**Section sources**
+{encryption_sources}
+
+## 输入验证
+
+{input_validation}
+
+**Section sources**
+{validation_sources}
+
+## 安全配置
+
+{security_configuration}
+
+**Section sources**
+{config_sources}
+
+## 漏洞管理
+
+{vulnerability_management}
+
+**Section sources**
+{vulnerability_sources}
+
+## 安全最佳实践
+
+{security_best_practices}
+
+**Section sources**
+{best_practices_sources}
+
+---
+
+## 参考来源
+
+{sources}
