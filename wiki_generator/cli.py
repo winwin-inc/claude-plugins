@@ -37,18 +37,13 @@ except ImportError:
         return Path(resource_filename('wiki_generator', path))
 
 
-# 添加项目根目录到 Python 路径（用于导入工具模块）
-project_root = Path(__file__).parent.parent
-sys.path.insert(0, str(project_root))
-
-from wiki_generator.utils.formatter import format_success, format_info, format_warning, format_error
-from wiki_generator.utils.validator import validate_claude_directory
-from wiki_generator.utils.file_helper import calculate_directory_size, format_size
-
-
 def get_package_claude_dir():
     """
     获取 wiki-generator 包内的 .claude/ 目录路径
+
+    工作原理：
+    1. 首先尝试从包内读取（uv tool install 后的情况）
+    2. 如果失败，回退到项目根目录（开发模式）
 
     Returns:
         Path: .claude/ 目录的绝对路径
@@ -56,8 +51,18 @@ def get_package_claude_dir():
     Raises:
         RuntimeError: 如果 .claude/ 目录不存在
     """
-    # 使用包数据文件访问函数获取 .claude 目录
-    claude_dir = _get_package_data('.claude')
+    # 方法 1: 尝试从已安装的包内读取
+    try:
+        claude_dir = _get_package_data('.claude')
+        if claude_dir.exists():
+            return claude_dir
+    except Exception:
+        pass
+
+    # 方法 2: 回退到项目根目录（开发模式）
+    # 获取项目根目录（wiki_generator/ 的上一级）
+    project_root = Path(__file__).parent.parent.resolve()
+    claude_dir = project_root / ".claude"
 
     if not claude_dir.exists():
         raise RuntimeError(
@@ -66,6 +71,15 @@ def get_package_claude_dir():
         )
 
     return claude_dir
+
+
+# 添加项目根目录到 Python 路径（用于导入工具模块）
+project_root = Path(__file__).parent.parent
+sys.path.insert(0, str(project_root))
+
+from wiki_generator.utils.formatter import format_success, format_info, format_warning, format_error
+from wiki_generator.utils.validator import validate_claude_directory
+from wiki_generator.utils.file_helper import calculate_directory_size, format_size
 
 
 def copy_claude_directory(source_dir: Path, target_dir: Path, overwrite: bool = False) -> dict:
