@@ -117,9 +117,8 @@ def main() -> int:
         print("✅ 安装完成！")
         print()
         print("📚 下一步:")
-        print("   1. 运行 /wiki-overview 生成项目概览文档")
-        print("   2. 运行 /wiki-module <模块路径> 为特定模块生成文档")
-        print("   3. 编辑 wiki-config.json 自定义配置")
+        print("   1. 编辑 wiki-config.json")
+        print("   2. 启动 claude code 中运行 /wiki-generate")
         print()
 
         return 0
