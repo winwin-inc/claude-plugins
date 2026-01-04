@@ -3,61 +3,72 @@
 **功能编号**: 004
 **功能名称**: optimize-wiki-docs
 **创建日期**: 2025-01-04
+**最后更新**: 2025-01-04（架构澄清后重写）
 **状态**: 草稿
-**版本**: 1.0.0
+**版本**: 2.0.0
 
 ---
 
 ## 技术上下文
 
+### 架构边界（基于澄清会话）
+
+**关键决策**（Session 2025-01-04 澄清）:
+- **Python 包职责**: 安装 Claude Code 命令、提供模板、配置验证、迁移工具
+- **Claude Code 命令职责**: 文档生成逻辑（AI 分析、内容生成、链接插入）
+- **职责分离**: 避免重复，Python 包快速安装（<5秒），文档生成由 AI 处理
+
 ### 现有系统
 
 **当前实现**:
-- CLI 工具：`wiki-generator` 命令（位于 `wiki_generator/cli.py`）
+- Python 包：`wiki-generator` CLI 工具（位于 `wiki_generator/cli.py`）
+- 安装机制：通过 `uv tool install wiki-generator` 安装
 - 模板目录：`wiki_generator/.claude/templates/`（6 个模板）
 - 配置文件：`.claude/wiki-config.json`
 - 输出目录：`docs/`（扁平结构）
 
 **技术栈**:
-- 语言：Python 3.8+
+- 语言：Python 3.11+
 - CLI 框架：Click
 - 包管理：uv / pip
 - 构建工具：hatchling
 
 ### 待实现功能
 
-**核心需求**（来自 spec.md）:
-1. **分层目录结构**：`docs/{zh|en}/content/{00-文档名.md}`
-2. **统一文档格式**：`<cite>`、目录、Section sources
-3. **11 种文档类型**：快速开始、项目概述、技术栈、架构、数据模型、核心功能、开发指南、部署指南、测试策略、故障排除、安全考虑
-4. **中英文双语**：两套模板（`templates/zh/` 和 `templates/en/`）
-5. **交叉引用**：自动生成文档间链接
-6. **配置驱动**：语言、结构模板、条件文档
-7. **AI 自动检测**：判断条件文档生成
-8. **迁移支持**：破坏性变更，提供迁移工具
+**Python 包职责**（明确范围）:
+1. **安装 Claude Code 命令**：复制 `.claude/commands/wiki-generate.md` 到用户项目
+2. **提供默认模板**：22 个模板文件（中英各 11 个）作为 `.claude/templates/` 分发
+3. **配置验证**：JSON Schema 验证工具（`--validate`）
+4. **初始化工具**：创建配置文件和目录结构（`--init`）
+5. **迁移工具**：配置格式迁移（`--migrate`）
+
+**Claude Code 命令职责**（不在本实施范围内）:
+- AI 分析代码库
+- 根据模板生成文档内容
+- 生成交叉引用链接
+- 实现条件文档检测
 
 ### 技术决策需求
 
-- **目录生成逻辑**：如何创建分层目录结构？
-- **模板变量系统**：如何支持变量替换？
-- **链接生成算法**：如何识别和生成交叉引用？
-- **AI 检测逻辑**：如何分析代码库判断条件文档？
-- **配置解析**：如何验证和处理配置文件？
-- **性能优化**：如何满足分级性能目标（<15/30/90 秒）？
+基于新的职责划分，需要决策：
+- **模板格式**: 如何定义模板结构以便 Claude Code 理解？
+- **配置 Schema**: 如何验证配置文件？
+- **安装流程**: 如何复制文件到用户项目？
+- **迁移策略**: 如何处理旧配置？
 
 ### 集成点
 
-- **现有 CLI**：需要扩展 `cli.py` 支持新模板和结构
-- **配置系统**：扩展现有 `wiki-config.json` schema
-- **模板系统**：从 6 个模板扩展到 22 个（中英各 11 个）
-- **输出路径**：从 `docs/` 改为 `docs/{zh|en}/content/`
+- **Python 包 CLI**：`wiki-generator --init`, `--validate`, `--migrate`
+- **Claude Code 命令**：`/wiki-generate`（读取配置和模板，生成文档）
+- **配置系统**：`.claude/wiki-config.json`（共享）
+- **模板系统**：`.claude/templates/`（共享）
 
 ### 依赖项
 
 - **参考项目**：`/home/yewenbin/work/tools/dingtalk-notable-connect/.qoder/repowiki`
-- **现有模板**：`wiki_generator/.claude/templates/*.template`
+- **现有模板**：`wiki_generator/.claude/templates/*.md.template`
 - **配置文件**：`.claude/wiki-config.json`
-- **CLI 入口**：`wiki_generator/cli:cli`
+- **JSON Schema**: `jsonschema` 库用于验证
 
 ---
 
@@ -68,30 +79,17 @@
 | 原则 | 评估 | 说明 |
 |------|------|------|
 | 中文优先 | ✅ Compliant | 所有交互、注释、文档使用简体中文 |
-| 代码优先 | ✅ Compliant | 本功能是元项目工具，为其他项目生成文档 |
-| 工具定位 | ✅ Compliant | 专注于工具化，生成高质量文档 |
-| 命令一致性 | ✅ Compliant | 使用 `/wiki.*` 格式（已有） |
-| 文档质量 | ✅ Compliant | 质量分数 ≥80 分，包含示例和图表 |
-| 增量更新 | ⚠️ Partial | 完全覆盖策略与"保留手动编辑"冲突 |
-| AI 辅助 | ✅ Compliant | AI 生成，用户验证 |
-| 性能预期 | ✅ Compliant | 满足分级性能目标 |
+| 代码优先 | ✅ Compliant | 本功能是元项目工具，只为其他项目生成文档 |
+| 工具定位 | ✅ Compliant | 专注于工具化（安装、验证、迁移） |
+| 命名一致性 | ✅ Compliant | 使用 `wiki-generator` 包名，命令为 `/wiki-generate` |
+| 文档质量 | ✅ Compliant | 模板质量分数 ≥80 分，包含示例和格式规范 |
+| 增量更新 | ⚠️ N/A | 本功能不涉及文档更新（由 Claude Code 命令处理） |
+| AI 辅助 | ✅ Compliant | Python 包提供工具，AI 生成由 Claude Code 处理 |
+| 性能预期 | ✅ Compliant | Python 包安装 < 5秒，文档生成性能由 Claude Code 保证 |
 
-### ⚠️ 冲突与例外
+### ✅ 合规总结
 
-**冲突项**: **原则 6（增量更新原则）**
-- **原则要求**: "更新时必须保留手动编辑的内容"
-- **功能澄清**: "文档覆盖策略：完全覆盖，不保留手动修改"
-- **冲突原因**: 用户选择了完全覆盖策略（澄清问题 Q2: Option B）
-
-**理由**:
-- 根据澄清会话记录，用户明确选择了"完全覆盖策略"
-- 适用场景是"文档完全由 AI 生成和管理"的项目
-- 用户可以通过其他方式（分支、复制）保留手动编辑
-- 这符合"代码优先原则"：AI 生成的文档不是手动维护的
-
-**批准**: ✅ **批准此例外**
-- 批准理由：用户明确需求，有明确的适用场景和用户责任说明
-- 缓解措施：在文档中明确说明覆盖策略，提醒用户如需保留手动编辑应使用其他方式
+所有适用原则均合规。职责清晰分离，Python 包专注于工具化，文档生成由 Claude Code AI 处理。
 
 ---
 
@@ -99,124 +97,181 @@
 
 ### 研究任务
 
-#### R-01: 分层目录结构生成逻辑
-**问题**: 如何实现 `docs/{zh|en}/content/{00-文档名.md}` 结构？
+#### R-01: 模板格式定义
+**问题**: 如何定义模板格式以便 Claude Code 理解和使用？
 
 **研究内容**:
-1. Python 标准库 `pathlib` 创建目录的最佳实践
-2. 数字前缀排序实现（00-99）
-3. 文档命名规范（中文文件名处理）
-4. 目录存在性检查和冲突处理
+1. Claude Code 对 Markdown 模板的理解方式
+2. 模板变量语法设计（`${variable}` vs `{{variable}}` vs `{variable}`）
+3. 模板结构约定（章节标题、变量位置）
+4. 参考项目的模板结构提取
 
 **决策**:
-- 使用 `pathlib.Path.mkdir(parents=True, exist_ok=True)`
-- 使用 `str(i).zfill(2)` 生成数字前缀
-- 中文文件名直接使用（现代文件系统支持）
-- 检测冲突并提示用户
+- **格式**: 标准 Markdown + 变量占位符
+- **变量语法**: `{variable_name}` （简单、清晰、Claude 易理解）
+- **结构约定**:
+  ```markdown
+  # {title}
 
-#### R-02: 模板变量系统设计
-**问题**: 如何实现模板变量替换？
+  <cite>
+  **本文档中引用的文件**
+  {cite_files}
+  </cite>
 
-**研究内容**:
-1. Jinja2 vs string.Template vs 自制替换
-2. 变量语法设计（`{variable}` vs `{{variable}}`）
-3. 嵌套变量和条件逻辑
-4. 性能对比（小规模模板）
+  ## 目录
+  {toc}
 
-**决策**:
-- **选择**: Python 标准库 `string.Template`
-- **语法**: `{variable}` （与规范一致）
-- **性能**: 对小规模模板足够快，无额外依赖
-- **扩展**: 自定义 `safe_substitute()` 方法处理缺失变量
+  ## {section1_title}
+  {section1_content}
 
-#### R-03: 交叉引用链接生成算法
-**问题**: 如何自动识别和生成文档间链接？
-
-**研究内容**:
-1. 文档内容解析（正则 vs NLP）
-2. 模块名识别模式
-3. 相对路径计算
-4. Markdown 链接格式
-
-**决策**:
-- **识别方法**: 基于正则表达式的模式匹配
-  - 模块引用：`/(?:模块|module|功能)[：:]\s*([^\n]+)/`
-  - 文件引用：`/`([a-zA-Z0-9_./-]+\.(py|js|ts|md))`/
-  - 函数引用：`/`([a-zA-Z_][a-zA-Z0-9_]*\(\))`/
-- **路径计算**: 使用 `pathlib.Path.relative_to()` 计算相对路径
-- **链接格式**: Markdown 标准链接语法 `[文本](路径)`
-- **验证**: 生成后检查文件存在性
-
-#### R-04: AI 检测条件文档逻辑
-**问题**: 如何自动判断需要哪些条件文档？
-
-**研究内容**:
-1. 代码库扫描策略
-2. 技术栈特征识别
-3. 规则引擎设计
-4. 误报控制
-
-**决策**:
-- **检测方法**: 基于关键词和导入语句的模式匹配
-- **规则引擎**: 简单的 Python 字典规则系统
-  ```python
-  conditions = {
-      "datamodel": ["sqlalchemy", "django.db", "peewee", " pymongo"],
-      "database": ["psycopg2", "pymongo", "mysql"],
-      "api": ["fastapi", "flask", "django.rest", "graphql"],
-      "testing": ["pytest", "unittest", "nose"],
-      "async": ["asyncio", "aiohttp", "trio"]
-  }
+  **Section sources**
+  {section1_sources}
   ```
-- **扫描范围**: `requirements.txt`, `pyproject.toml`, 代码导入语句
-- **阈值**: 至少匹配 1 个关键词或 2 个相关导入
+- **Claude 提示**: 在模板顶部添加注释，指导 Claude 如何填充变量
 
-#### R-05: 配置文件 Schema 设计
-**问题**: 如何验证和处理配置文件？
+#### R-02: 配置文件 Schema 设计
+**问题**: 如何设计配置文件 Schema 以支持验证？
 
 **研究内容**:
-1. JSON Schema 规范
-2. 验证库选择（jsonschema vs pydantic）
-3. 错误消息设计
-4. 默认值处理
+1. JSON Schema Draft 7 规范
+2. 配置文件结构（参考现有配置）
+3. 验证库选择（jsonschema vs pydantic）
+4. 错误消息设计
 
 **决策**:
-- **Schema**: 使用 JSON Schema Draft 7
-- **验证库**: `jsonschema` Python 库（轻量级，无额外依赖）
-- **错误消息**: 中文错误消息，指出具体字段和期望值
-- **默认值**: 在规范中定义，配置缺失时使用默认值
+- **Schema**: JSON Schema Draft 7
+- **验证库**: `jsonschema`（轻量级，无额外依赖）
+- **配置结构**:
   ```json
   {
     "output_dir": "docs",
     "language": "zh",
     "structure_template": "reference",
     "include_sources": true,
-    "generate_toc": true
+    "generate_toc": true,
+    "sections": {
+      "required": ["quickstart", "overview", ...],
+      "optional": ["datamodel", "corefeatures"]
+    }
   }
   ```
+- **错误消息**: 中文错误消息，指出具体字段和期望值
 
-#### R-06: 性能优化策略
-**问题**: 如何满足分级性能目标？
+#### R-03: 文件安装机制
+**问题**: 如何将 `.claude/` 目录复制到用户项目？
 
 **研究内容**:
-1. 文件 I/O 批处理
-2. 模板渲染缓存
-3. 并行处理可能性
-4. 大型项目优化
+1. Python 包数据文件打包（`package_data` vs `data_files`）
+2. Click 命令的文件复制逻辑
+3. 路径处理（`pathlib`）
+4. 权限处理
 
 **决策**:
-- **I/O 优化**: 批量读取文件，减少系统调用
-- **缓存**: 缓存模板编译结果（`string.Template`）
-- **并行**: 暂不使用（增加复杂度，单线程已满足性能目标）
-- **大型项目**: 分批处理（每批 50 个文件），显示进度条
+- **打包方式**: 使用 `package_data` 在 `wiki_generator/.claude/`
+- **复制逻辑**:
+  ```python
+  def install_claude_files(target_dir: Path):
+      source = Path(__file__).parent / ".claude"
+      target = target_dir / ".claude"
+      if target.exists():
+          confirm_overwrite()
+      shutil.copytree(source, target, dirs_exist_ok=True)
+  ```
+- **路径处理**: 使用 `pathlib.Path`，跨平台兼容
+- **权限**: 保持源文件权限，使用 `shutil.copy2`
+
+#### R-04: 配置验证实现
+**问题**: 如何实现配置文件验证？
+
+**研究内容**:
+1. `jsonschema` 库的使用方法
+2. 自定义错误消息
+3. CLI 集成（Click）
+4. 验证报告格式
+
+**决策**:
+- **实现**:
+  ```python
+  from jsonschema import validate, ValidationError
+
+  def validate_config(config_path: Path) -> ValidationResult:
+      schema = load_schema("wiki-config-schema.json")
+      config = json.loads(config_path.read_text())
+      try:
+          validate(instance=config, schema=schema)
+          return ValidationResult(is_valid=True, errors=[])
+      except ValidationError as e:
+          return ValidationResult(
+              is_valid=False,
+              errors=[format_error_chinese(e)]
+          )
+  ```
+- **CLI 集成**:
+  ```bash
+  wiki-generator --validate          # 验证当前目录配置
+  wiki-generator --init --validate   # 初始化后验证
+  ```
+
+#### R-05: 迁移工具实现
+**问题**: 如何实现配置迁移工具？
+
+**研究内容**:
+1. 旧配置格式识别
+2. 迁移规则定义
+3. 备份机制
+4. 迁移报告生成
+
+**决策**:
+- **旧配置检测**: 检查缺少必需字段或版本号
+- **迁移规则**:
+  ```python
+  MIGRATION_RULES = {
+      "1.0": {
+          "add_fields": ["language", "structure_template"],
+          "rename_fields": {"lang": "language"},
+          "remove_fields": ["deprecated_field"]
+      }
+  }
+  ```
+- **备份**: 自动备份为 `.claude/wiki-config.json.backup`
+- **报告**: 生成 `.claude/migration-report.md`
+
+#### R-06: 模板分发策略
+**问题**: 22 个模板文件如何分发和更新？
+
+**研究内容**:
+1. 模板文件组织（`templates/zh/`, `templates/en/`）
+2. 版本管理（模板版本号）
+3. 用户自定义模板的保护
+4. 模板更新机制
+
+**决策**:
+- **目录结构**:
+  ```
+  wiki_generator/.claude/
+  ├── templates/
+  │   ├── zh/
+  │   │   ├── quickstart.md.template
+  │   │   ├── overview.md.template
+  │   │   └── ...
+  │   └── en/
+  │       ├── quickstart.md.template
+  │       └── ...
+  ├── schema/
+  │   └── wiki-config-schema.json
+  └── README.md
+  ```
+- **版本管理**: 在 `--init` 时记录模板版本到 `.claude/.template-version`
+- **自定义保护**: 检测用户修改，更新时提示
+- **更新机制**: `wiki-generator --update-templates`（可选功能）
 
 ---
 
-## Phase 1: 设计与契约
+## Phase 1: 设计与合约
 
 ### 数据模型
 
-#### 实体：文档配置（WikiConfig）
+#### 实体：WikiConfig（配置文件）
 
 ```python
 from dataclasses import dataclass
@@ -235,204 +290,96 @@ class StructureTemplate(str, Enum):
 
 @dataclass
 class SectionConfig:
-    name: str
-    template: str
-    order: int
-    subsections: Optional[List[str]] = None
-
-@dataclass
-class FormattingConfig:
-    code_block_syntax: bool = True
-    line_numbers: bool = True
-    section_sources: bool = True
-
-@dataclass
-class LinksConfig:
-    auto_generate: bool = True
-    validate: bool = True
+    required: List[str]
+    optional: List[str]
 
 @dataclass
 class WikiConfig:
     output_dir: str = "docs"
     language: Language = Language.ZH
     structure_template: StructureTemplate = StructureTemplate.REFERENCE
-    required_sections: List[str] = None
-    optional_sections: List[str] = None
-    custom_structure: List[SectionConfig] = None
     include_sources: bool = True
     generate_toc: bool = True
-    formatting: FormattingConfig = None
-    links: LinksConfig = None
+    sections: Optional[SectionConfig] = None
 ```
 
-#### 实体：文档元数据（DocumentMetadata）
+#### 实体：TemplateManifest（模板清单）
 
 ```python
 @dataclass
-class DocumentMetadata:
-    title: str
-    template_name: str
-    language: Language
-    order: int
-    cite_files: List[str]
-    sections: List[Dict[str, str]]
-    section_sources: Dict[str, List[str]]
-    output_path: Path
-```
-
-#### 实体：项目分析结果（ProjectAnalysis）
-
-```python
-@dataclass
-class ProjectInfo:
+class TemplateInfo:
     name: str
-    type: str  # "web", "cli", "lib"
-    language: str  # "python", "javascript", etc.
-    file_count: int
-    line_count: int
-    scale: str  # "small", "medium", "large"
+    language: str
+    path: str
+    version: str
 
 @dataclass
-class ConditionDocs:
-    datamodel: bool = False
-    database: bool = False
-    api: bool = False
-    testing: bool = False
-    async_features: bool = False
+class TemplateManifest:
+    templates: List[TemplateInfo]
+    version: str
+    installed_date: str
+```
+
+#### 实体：ValidationResult（验证结果）
+
+```python
+@dataclass
+class ValidationResult:
+    is_valid: bool
+    errors: List[str]
+    warnings: List[str]
+```
+
+#### 实体：MigrationResult（迁移结果）
+
+```python
+@dataclass
+class MigrationResult:
+    success: bool
+    backup_path: Optional[str]
+    changes: List[str]
+    errors: List[str]
 ```
 
 ### API 契约
+
+#### CLI 命令接口
+
+**命令**: `wiki-generator`
+
+**子命令**:
+1. `--init` - 初始化项目配置
+2. `--validate` - 验证配置文件
+3. `--migrate` - 迁移旧配置
+4. `--version` - 显示版本信息
 
 #### 输入契约：配置文件
 
 **文件**: `.claude/wiki-config.json`
 
-**Schema**: `contracts/wiki-config-schema.json`
+**Schema**: `wiki-config-schema.json`
 
-```json
-{
-    "$schema": "http://json-schema.org/draft-07/schema#",
-    "type": "object",
-    "required": ["output_dir", "language"],
-    "properties": {
-        "output_dir": {
-            "type": "string",
-            "description": "文档输出目录"
-        },
-        "language": {
-            "type": "string",
-            "enum": ["zh", "en", "both"],
-            "description": "文档语言"
-        },
-        "structure_template": {
-            "type": "string",
-            "enum": ["reference", "simple", "custom"],
-            "description": "目录结构模板"
-        },
-        "sections": {
-            "type": "object",
-            "properties": {
-                "required": {
-                    "type": "array",
-                    "items": { "type": "string" }
-                },
-                "optional": {
-                    "type": "array",
-                    "items": { "type": "string" }
-                }
-            }
-        },
-        "include_sources": {
-            "type": "boolean",
-            "description": "是否包含 Section sources"
-        },
-        "generate_toc": {
-            "type": "boolean",
-            "description": "是否生成目录索引"
-        }
-    }
-}
+#### 输出契约：安装的文件结构
+
+**目标目录**: 用户的 `.claude/`
+
+**结构**:
 ```
-
-#### 输出契约：文档结构
-
-**目录结构**:
-```
-docs/
-├── {language}/            # zh 或 en
-│   └── content/
-│       ├── 00-quickstart.md
-│       ├── 01-overview.md
-│       ├── 02-techstack.md
-│       ├── 03-architecture/
-│       │   └── system-design.md
-│       ├── 04-datamodel/   # 条件文档
-│       │   └── database-schema.md
-│       └── ...
-└── .wiki-meta.json        # 元数据（可选）
-```
-
-**文件格式**: Markdown (.md)
-
-**必需元数据**:
-- 文档标题（H1）
-- `<cite>` 块：引用文件列表
-- `## 目录`：目录索引
-- Section sources：章节来源
-
-### 快速开始（Quickstart）
-
-#### 安装新模板
-
-```bash
-# 1. 确保在项目根目录
-cd /path/to/your/project
-
-# 2. 安装 wiki-generator 工具（如果尚未安装）
-uv tool install wiki-generator
-
-# 3. 创建配置文件
-cat > .claude/wiki-config.json << EOF
-{
-  "output_dir": "docs",
-  "language": "zh",
-  "structure_template": "reference",
-  "include_sources": true,
-  "generate_toc": true
-}
-EOF
-
-# 4. 生成文档
-wiki-generator --full
-
-# 5. 查看生成的文档
-ls -lh docs/zh/content/
-```
-
-#### 增量更新文档
-
-```bash
-# 修改代码后
-vim src/auth/login.py
-
-# 更新对应文档
-wiki-generator --update
-
-# 查看变更报告
-cat docs/.wiki-update-report.md
-```
-
-#### 迁移旧配置
-
-```bash
-# 运行迁移工具
-wiki-generator --migrate
-
-# 检查迁移报告
-cat docs/.wiki-migration-report.md
-
-# 验证新配置
-cat .claude/wiki-config.json
+.claude/
+├── commands/
+│   └── wiki-generate.md         # Claude Code 命令
+├── templates/
+│   ├── zh/                      # 中文模板
+│   │   ├── quickstart.md.template
+│   │   ├── overview.md.template
+│   │   └── ... (11 个)
+│   └── en/                      # 英文模板
+│       ├── quickstart.md.template
+│       └── ... (11 个)
+├── schema/
+│   └── wiki-config-schema.json  # JSON Schema
+├── wiki-config.json             # 配置文件（--init 创建）
+└── .template-version            # 模板版本号
 ```
 
 ---
@@ -441,7 +388,7 @@ cat .claude/wiki-config.json
 
 ### 阶段划分
 
-#### Phase 1: 模板开发（5 天）
+#### Phase 1: 模板创建（3 天）
 
 **任务**:
 1. 创建中文模板（11 个）
@@ -460,109 +407,100 @@ cat .claude/wiki-config.json
 2. 创建英文模板（11 个）
    - 对应的 `templates/en/*.template`
 
-3. 实现页头结构（`<cite>`、目录、Section sources）
-4. 添加变量替换支持
+3. 实现统一的页头结构（`<cite>`、目录、Section sources）
+4. 添加变量占位符（`{variable}`）
 
 **依赖**: 无
 
 **输出**:
 - 22 个模板文件
-- 模板变量系统
-- 单元测试
+- 模板格式规范文档
 
-#### Phase 2: 目录结构逻辑（3 天）
+#### Phase 2: 配置系统（2 天）
 
 **任务**:
-1. 实现分层目录生成
-   - `docs/{zh|en}/content/` 目录创建
-   - 数字前缀排序（00-99）
-2. 实现自定义结构配置
-3. 实现 AI 检测条件文档
-4. 配置文件解析和验证
+1. 设计配置文件 Schema
+2. 创建 `wiki-config-schema.json`
+3. 实现配置验证模块
+4. 实现配置初始化（`--init`）
 
 **依赖**: Phase 1（模板）
 
 **输出**:
-- 目录生成模块
-- 配置解析模块
-- AI 检测模块
-- 集成测试
+- JSON Schema 文件
+- 配置验证模块
+- 初始化命令
 
-#### Phase 3: 交叉引用（2 天）
-
-**任务**:
-1. 实现链接识别算法
-2. 实现相对路径计算
-3. 实现三种链接类型（文档、代码、锚点）
-4. 链接验证工具
-
-**依赖**: Phase 2（目录结构）
-
-**输出**:
-- 链接生成模块
-- 链接验证工具
-- 单元测试
-
-#### Phase 4: 配置和兼容（2 天）
+#### Phase 3: 安装和迁移（2 天）
 
 **任务**:
-1. 实现配置文件解析
-2. 实现迁移工具（`wiki-generator --migrate`）
-3. 实现错误消息和迁移指引
-4. 向后兼容性测试
+1. 实现文件安装逻辑（复制 `.claude/` 到用户项目）
+2. 实现迁移工具（`--migrate`）
+3. 实现版本管理
+4. 编写安装和迁移文档
 
-**依赖**: Phase 1（模板）
+**依赖**: Phase 2（配置）
 
 **输出**:
-- 配置解析模块
+- 安装模块
 - 迁移工具
-- 迁移指南文档
-- 集成测试
+- 用户文档
 
-#### Phase 5: 测试和优化（3 天）
+#### Phase 4: CLI 集成（1 天）
+
+**任务**:
+1. 实现 `wiki-generator` CLI 命令
+2. 集成所有子命令（`--init`, `--validate`, `--migrate`）
+3. 添加错误处理和用户友好的消息
+4. 编写 CLI 使用文档
+
+**依赖**: Phase 1-3
+
+**输出**:
+- 完整的 CLI 工具
+- 使用文档
+
+#### Phase 5: 测试和文档（2 天）
 
 **任务**:
 1. 单元测试（所有模块）
-2. 集成测试（端到端）
-3. 性能测试（小型/中型/大型）
-4. 用户验收测试
-5. 文档完善
+2. 集成测试（安装、验证、迁移流程）
+3. 用户文档
+4. 发布准备
 
 **依赖**: 所有前面的阶段
 
 **输出**:
 - 测试套件
-- 性能报告
-- 用户手册
+- 用户文档
 - 发布版本
 
 ---
 
 ## 里程碑与交付物
 
-### M1: 所有模板创建完成（Day 5）
+### M1: 模板创建完成（Day 3）
 - ✅ 22 个模板文件（中英各 11 个）
-- ✅ 模板变量系统
-- ✅ 单元测试通过
+- ✅ 模板格式规范
+- ✅ 变量占位符定义
 
-### M2: 目录结构生成工作（Day 8）
-- ✅ 分层目录正确生成
-- ✅ 配置解析正常
-- ✅ AI 检测准确
+### M2: 配置系统完成（Day 5）
+- ✅ JSON Schema 定义
+- ✅ 配置验证工具
+- ✅ 初始化命令
 
-### M3: 交叉引用功能完成（Day 10）
-- ✅ 链接自动生成
-- ✅ 三种链接类型支持
-- ✅ 链接验证通过
+### M3: 安装和迁移完成（Day 7）
+- ✅ 文件安装逻辑
+- ✅ 迁移工具
+- ✅ 版本管理
 
-### M4: 配置和迁移完成（Day 12）
-- ✅ 配置文件支持
-- ✅ 迁移工具可用
-- ✅ 迁移指南清晰
+### M4: CLI 集成完成（Day 8）
+- ✅ 完整的 CLI 工具
+- ✅ 所有子命令
+- ✅ 错误处理
 
-### M5: 所有测试通过，发布（Day 15）
+### M5: 测试和发布完成（Day 10）
 - ✅ 所有测试通过
-- ✅ 性能目标达成
 - ✅ 文档完善
 - ✅ 版本发布
 
@@ -570,9 +508,11 @@ cat .claude/wiki-config.json
 
 ## 实施计划版本
 
-**版本**: 1.0.0
+**版本**: 2.0.0（架构澄清后重写）
 **创建日期**: 2025-01-04
 **最后更新**: 2025-01-04
 **负责人**: Repo Wiki Generator 项目团队
 
-**状态**: ✅ Phase 0-2 完成，待执行 Phase 3-5
+**状态**: ✅ Phase 0 完成，待执行 Phase 1-5
+
+**总预计时间**: 10 个工作日（比原计划减少 5 天，因为职责更清晰）
