@@ -1,0 +1,21 @@
+{
+  "output_dir": "docs",
+  "exclude_patterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".git",
+    "coverage"
+  ],
+  "template_dir": ".claude/templates",
+  "quality_threshold": 80,
+  "diagrams": {
+    "enabled": true,
+    "detail_level": "medium"
+  },
+  "modules": {
+    "auto_detect": true,
+    "patterns": ["src/*", "lib/*", "app/*"]
+  },
+  "language": "zh-CN"
+}

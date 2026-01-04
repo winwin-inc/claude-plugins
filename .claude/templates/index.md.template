@@ -1,0 +1,49 @@
+# {{PROJECT_NAME}} 文档导航
+
+欢迎来到 {{PROJECT_NAME}} 项目文档。
+
+## 📚 文档目录
+
+### 快速开始
+
+- [项目概览](00-Overview.md) - 了解项目基本信息和快速开始
+- [开发指南](02-Development.md) - 本地开发环境设置
+
+### 架构和设计
+
+- [系统架构](01-Architecture.md) - 架构设计和模块关系
+
+### 模块文档
+
+{{MODULE_INDEX}}
+
+### API 文档
+
+- [API 端点](api/ENDPOINTS.md) - 完整的 API 接口文档
+
+### 其他
+
+- [变更日志](CHANGELOG.md) - 版本更新历史
+- [贡献指南](CONTRIBUTING.md) - 如何贡献代码
+
+## 🔍 快速查找
+
+### 按功能查找
+
+{{FUNCTION_INDEX}}
+
+### 按模块查找
+
+{{MODULE_LOOKUP}}
+
+## 📊 项目统计
+
+- **总模块数**: {{TOTAL_MODULES}}
+- **API 端点数**: {{TOTAL_ENDPOINTS}}
+- **代码覆盖率**: {{CODE_COVERAGE}}
+- **文档质量分数**: {{QUALITY_SCORE}}/100
+
+---
+
+**最后更新**: {{LAST_UPDATE_TIME}}
+**文档版本**: {{DOC_VERSION}}

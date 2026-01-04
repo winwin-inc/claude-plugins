@@ -1,457 +1,111 @@
-# Project Wiki Generator - Claude Code Guide
+# Repo Wiki Generator - Claude Code 指南
 
-This project provides custom Claude Code slash commands for automatically generating and maintaining project wiki documentation.
+本项目提供 Claude Code 自定义斜杠命令，用于自动生成和维护项目 Wiki 文档。
 
-## ⚠️ 语言要求（重要）
+## ⚠️ 语言要求
 
-**所有与用户的交互、代码注释、提交消息、文档和沟通必须使用简体中文。**
+**所有交互、注释、提交消息、文档必须使用简体中文。**
 
-- **会话语言**：与用户的所有对话必须使用简体中文
-- **代码注释**：所有代码注释必须使用简体中文
-- **提交消息**：Git 提交消息必须使用简体中文
-- **文档内容**：所有文档（README、设计文档、API 文档等）必须使用简体中文
-- **变量和函数名**：使用英文命名（编程惯例），但注释和文档字符串必须使用简体中文
-- **错误消息**：面向用户的错误消息必须使用简体中文
-- **日志消息**：面向运维人员的日志消息必须使用简体中文
+- 会话语言、代码注释、提交消息、文档内容：简体中文
+- 变量和函数名：英文（编程惯例）
+- 例外：技术术语（HTTP、API、SQL 等）可保留英文
 
-**例外情况**：
-- 技术术语可以保留英文（如 HTTP、API、SQL 等）
-- 配置文件名、命令行参数等技术标识符使用英文
-- 代码中的字符串字面量（除非是面向用户的消息）
+## ⚠️ 文档生成策略
 
-**记住**：这是一个面向中文用户的项目，简体中文是主要的交流语言。
+**本项目例外**：作为 Wiki 生成器，它为其他项目生成文档。
 
-## ⚠️ 文档生成策略（重要）
+- **本项目自身**：代码优先，文档按需（不自动生成文档）
+- **其他项目**：通过 `/wiki` 命令自动生成文档（核心功能）
 
-**本项目例外：作为 wiki 生成器项目，本项目的命令会自动为其他项目生成文档。**
+## 项目概述
 
-**对于本项目自身**：
-- **默认行为**：只编写代码，不生成文档
-- **禁止操作**：
-  - 不要创建 README.md（除非用户明确要求）
-  - 不要生成设计文档（design.md、architecture.md 等）
-  - 不要编写使用说明（usage.md、guide.md 等）
-  - 不要创建变更日志（CHANGELOG.md）
+**目标**：通过 AI 分析代码库，自动生成高质量技术文档。
 
-- **允许操作**（仅在用户明确要求时）：
-  - ✅ 用户说："帮我写一个 README" → 可以生成 README.md
-  - ✅ 用户说："生成 API 文档" → 可以生成 api.md
-  - ✅ 用户说："编写使用说明" → 可以生成 usage.md
+**核心能力**：
+- 自动文档生成（从代码分析）
+- 增量更新（基于代码变更）
+- 质量验证和评分
+- 多格式导出（PDF、HTML、DOCX）
+- 架构图生成（Mermaid）
+- 多语言翻译支持
 
-**对于其他项目（通过 /wiki 命令）**：
-- ✅ **允许自动生成**：wiki 命令会为其他项目自动生成文档
-- ✅ 这是本项目的核心功能：通过 /wiki 命令为其他项目创建文档
+## 快速开始
 
-- **代码注释**：代码中的注释和文档字符串（docstrings）是允许且鼓励的，这不属于"生成文档"
+### 安装 Wiki 命令
 
-**记住**：本项目是文档生成工具，它为其他项目生成文档，但自身遵循"代码优先，文档按需"的原则。
-
-
-## Project Overview
-
-**Purpose**: Transform how development teams maintain project documentation by leveraging AI to analyze codebases and generate high-quality technical documentation.
-
-**Key Capabilities**:
-- Automated documentation generation from code analysis
-- Incremental updates based on code changes
-- Quality validation and scoring
-- Multi-format export (PDF, HTML, DOCX)
-- Architecture diagram generation
-- Multi-language translation support
-
-## Quick Start for Claude Code
-
-When working in this project, Claude Code should:
-
-### 1. Understand the Command Structure
-
-所有 wiki 命令遵循以下格式：
 ```bash
-/wiki.<category> [参数]
+# 在你的项目目录中运行
+uvx wiki-generator
+
+# 或安装后直接使用
+uv pip install -e .
+wiki-generator
 ```
 
-**Categories**:
-- `init`, `overview`, `architecture` - Basic setup
-- `module`, `modules-all` - Module documentation
-- `api`, `development` - Specialized documentation
-- `update`, `changelog`, `cleanup` - Maintenance
-- `diagrams`, `validate`, `index` - Enhancement
-- `search`, `stats`, `export`, `translate` - Advanced features
+这会将 `.claude/` 目录（包含所有 wiki 命令和模板）复制到你的项目。
 
-### 2. When to Use Wiki Commands
 
-**使用 `/wiki.init` 当**：
-- 首次设置文档结构
-- 创建 docs 目录和配置文件
-
-**使用 `/wiki.update` 在**：
-- 修改代码后
-- 提交新功能后
-- 重构模块后
-
-**使用 `/wiki.module [path]` 当**：
-- 添加需要文档的新模块
-- 显著更新现有模块
-
-**使用 `/wiki.validate` 在**：
-- 提交文档更改前
-- 发布或部署前
-- 文档审查前
-
-### 3. Typical Workflow
-
-When a user asks to generate or update documentation:
-
-1. **检查 docs 结构是否存在**
-   - 运行 `ls docs/` 验证
-   - 如果缺失，建议使用 `/wiki.init`
-
-2. **了解范围**
-   - 完整文档？→ 使用 `/wiki.overview`、`/wiki.architecture`、`/wiki.modules-all`
-   - 单个模块？→ 使用 `/wiki.module [path]`
-   - 仅更新？→ 使用 `/wiki.update`
-   - 质量检查？→ 使用 `/wiki.validate`
-
-3. **执行适当的命令**
-   - 始终先检查现有文档
-   - 更新时保留手动编辑的内容
-   - 更新后生成变更报告
-
-4. **验证输出**
-   - 生成后运行 `/wiki.validate`
-   - 报告质量分数和问题
-   - 如果分数 < 80，建议改进
-
-### 4. File Structure
-
-```
-repo-wiki/
-├── .claude/
-│   ├── commands/           # Slash command definitions
-│   │   ├── wiki-init.md
-│   │   ├── wiki-overview.md
-│   │   ├── wiki-module.md
-│   │   └── ...
-│   └── wiki-config.json    # Wiki configuration
-├── .specify/
-│   ├── memory/             # 项目记忆和治理文档
-│   │   └── constitution.md # 项目宪章
-│   └── templates/          # 文档模板（待创建）
-├── specs/                  # 功能规范目录
-│   ├── README.md           # Specs 目录总览
-│   └── 001-wiki-generator-commands/  # 功能 #001
-│       ├── README.md       # 功能概述
-│       ├── spec.md         # 功能规范文档
-│       ├── checklists/     # 质量检查清单
-│       └── tasks/          # 任务列表
-├── docs/                   # 生成的文档（目标项目）
-│   ├── 00-Overview.md
-│   ├── 01-Architecture.md
-│   ├── modules/           # Module documentation
-│   ├── api/               # API documentation
-│   └── diagrams/          # Generated diagrams
-├── CLAUDE.md              # 项目开发指南（本文件）
-├── commands.md            # 命令使用指南
-└── README.md              # 项目说明（待创建）
-```
-
-## Command Reference
-
-### Essential Commands
-
-**`/wiki.init`**
-- 创建文档目录结构
-- 生成配置文件
-- 设置模板
-- **首先运行的命令**
-
-**`/wiki.overview`**
-- 分析项目结构和关键文件
-- 生成项目概览
-- 识别技术栈
-- 创建快速入门指南
-- **输出**：`docs/00-Overview.md`
-
-**`/wiki.architecture`**
-- 分析系统架构
-- 生成 Mermaid 图表
-- 记录设计决策
-- 识别模式和依赖关系
-- **输出**：`docs/01-Architecture.md`
-
-**`/wiki.module [path]`**
-- 分析特定模块
-- 提取 API 接口
-- 记录依赖关系
-- 生成使用示例
-- **输出**：`docs/modules/[module-name].md`
-
-**`/wiki.modules-all`**
-- 扫描所有项目模块
-- 为每个模块生成文档
-- 创建模块索引
-- 映射依赖关系
-- **输出**：`docs/modules/` + 索引
-
-**`/wiki.update`**
-- 分析最近的提交
-- 更新受影响的文档
-- 生成变更报告
-- **代码更改后使用**
-
-**`/wiki.validate`**
-- 检查文档质量
-- 验证链接和代码示例
-- 生成质量分数（0-100）
-- 列出需要改进的地方
-- **提交文档前运行**
-
-### 高级命令
-
-**`/wiki.diagrams`** - 生成/更新 Mermaid 图表
-**`/wiki.api`** - 记录 API 端点
-**`/wiki.development`** - 创建开发者入门指南
-**`/wiki.index`** - 生成导航索引
-**`/wiki.cleanup`** - 优化文档格式
-**`/wiki.changelog`** - 生成版本历史
-**`/wiki.search [query]`** - 搜索文档
-**`/wiki.stats`** - 显示文档统计信息
-**`/wiki.export [format]`** - 导出为 PDF/HTML/DOCX
-**`/wiki.translate [lang]`** - 翻译为其他语言
-**`/wiki.compare [v1] [v2]`** - 比较文档版本
-**`/wiki.todo`** - 列出文档待办事项
-
-## Configuration
+## 配置文件
 
 ### `.claude/wiki-config.json`
 
 ```json
 {
   "output_dir": "docs",
-  "exclude_patterns": [
-    "node_modules",
-    "dist",
-    "build",
-    ".git"
-  ],
+  "exclude_patterns": ["node_modules", "dist", ".git"],
   "template_dir": ".claude/templates",
   "quality_threshold": 80,
   "diagrams": {
     "enabled": true,
     "detail_level": "medium"
-  },
-  "modules": {
-    "auto_detect": true,
-    "patterns": ["src/*", "lib/*", "app/*"]
   }
 }
 ```
 
-## Best Practices
+## 项目结构
 
-### 生成文档时
-
-1. **从 `/wiki.init` 开始** - 始终首先初始化
-2. **按顺序生成**：
-   - 概览 → 架构 → 模块 → API → 开发
-   - 这确保先记录依赖关系
-3. **验证输出** - 生成后始终运行 `/wiki.validate`
-4. **人工审查** - AI 生成草稿，人工审查
-
-### 更新文档时
-
-1. **使用 `/wiki.update`** - 不要重新生成所有内容
-2. **检查变更报告** - 审查更新了什么
-3. **保留手动编辑** - 更新应该增强，而不是替换
-4. **重新验证** - 确保质量得到维护
-
-### Quality Standards
-
-Generated documentation should:
-- Have quality score of 80+
-- Include code examples
-- Contain diagrams for architecture
-- Have working internal links
-- Follow consistent formatting
-- Be accurate and up-to-date
-
-### 性能预期
-
-- `/wiki.overview`：< 30 秒（10K 文件）
-- `/wiki.module`：< 10 秒（单个模块）
-- `/wiki.modules-all`：< 5 分钟（100 个模块）
-- `/wiki.update`：< 2 分钟（增量更新）
-
-## Common Patterns
-
-### 新项目设置
-
-```bash
-# 用户："为这个新项目生成文档"
-/wiki.init
-/wiki.overview
-/wiki.architecture
-/wiki.modules-all
-/wiki.api
-/wiki.development
-/wiki.index
-/wiki.validate
+```
+repo-wiki/
+├── cli.py                       # Wiki Generator 安装工具
+├── .claude/                     # Wiki 命令和模板
+│   ├── commands/                # Claude Code 自定义命令
+│   │   ├── wiki-init.md
+│   │   ├── wiki-overview.md
+│   │   ├── wiki-module.md
+│   │   └── ...
+│   ├── templates/               # 文档模板
+│   │   ├── overview.md.template
+│   │   ├── module.md.template
+│   │   └── ...
+│   ├── backups/                 # 备份目录
+│   ├── BEST-PRACTICES.md        # 最佳实践
+│   └── README.md                # Wiki 文档说明
+├── core/                        # 核心功能模块
+├── utils/                       # 工具模块
+├── models/                      # 数据模型
+├── pyproject.toml               # 项目配置
+├── specs/                       # 功能规范
+│   ├── 001-wiki-generator-commands/  # Wiki 命令规范
+│   ├── 002-command-install/         # 安装工具规范
+│   └── 003-fix-package-structure/   # 包结构修复规范
+└── README-WIKI-GENERATOR.md     # Wiki Generator 文档
 ```
 
-### 代码更改后
+## 相关文档
 
-```bash
-# 用户："我刚更新了 auth 模块"
-/wiki.module src/auth
-/wiki.validate
-```
+- [Wiki 命令规范](specs/001-wiki-generator-commands/spec.md)
+- [安装工具文档](README-WIKI-GENERATOR.md)
+- [项目最佳实践](.claude/BEST-PRACTICES.md)
 
-### 发布前
+## 成功指标
 
-```bash
-# 用户："为 v2.0 版本准备文档"
-/wiki.update
-/wiki.diagrams
-/wiki.cleanup
-/wiki.validate
-/wiki.changelog
-/wiki.export pdf
-```
-
-### 模块文档
-
-```bash
-# 用户："记录 payment 模块"
-/wiki.module src/payment
-```
-
-## Error Handling
-
-### 常见问题
-
-**"docs/ 目录不存在"**
-- 解决方案：首先运行 `/wiki.init`
-
-**"找不到模块"**
-- 检查模块路径是否正确
-- 验证模块不在排除模式中
-
-**"质量分数低"**
-- 审查验证报告
-- 解决缺失的部分
-- 添加代码示例
-- 修复损坏的链接
-
-**"图表生成失败"**
-- 检查 Mermaid 语法
-- 验证图表复杂度
-- 降低配置中的详细级别
-
-## 与 Git 集成
-
-### Post-Commit 钩子
-
-示例 `.git/hooks/post-commit`：
-```bash
-#!/bin/bash
-echo "📚 正在更新文档..."
-claude-code wiki.update
-claude-code wiki.validate
-```
-
-### Pre-Push 检查
-
-示例 `.git/hooks/pre-push`：
-```bash
-#!/bin/bash
-echo "🔍 正在验证文档..."
-claude-code wiki.validate
-if [ $score -lt 80 ]; then
-  echo "❌ 文档质量低于阈值"
-  exit 1
-fi
-```
-
-## 测试
-
-测试 wiki 命令时：
-
-1. **使用测试仓库**和已知结构
-2. **验证输出质量**使用 `/wiki.validate`
-3. **检查增量更新**不丢失数据
-4. **测试边缘情况**：
-   - 空项目
-   - 大文件
-   - 多语言
-   - 缺失依赖
-
-## 维护
-
-### 定期任务
-
-- **每周**：运行 `/wiki.update` 与代码同步
-- **每月**：运行 `/wiki.stats` 检查覆盖范围
-- **每季度**：运行 `/wiki.validate` 并解决问题
-- **发布前**：运行完整的文档周期
-
-### 更新命令
-
-修改 wiki 命令文件时：
-1. 使用示例项目测试
-2. 验证质量分数提高
-3. 如果行为改变，更新此 CLAUDE.md
-4. 记录破坏性更改
-
-## 故障排除
-
-### 命令未找到
-
-- 验证命令在 `.claude/commands/` 中
-- 检查文件命名：`wiki-[name].md`
-- 确保前言正确
-
-### 输出质量差
-
-- 增加配置中的详细级别
-- 添加项目特定的模板
-- 在命令提示中提供更多上下文
-- 运行 `/wiki.cleanup` 进行优化
-
-### 性能缓慢
-
-- 检查配置中的排除模式
-- 减少分析深度
-- 使用增量更新而不是完全重新生成
-- 将大模块拆分为更小的模块
-
-## 资源
-
-- **功能规范**：[spec-wiki-generator.md](spec-wiki-generator.md)
-- **命令指南**：[commands.md](commands.md)
-- **Claude Code 文档**：https://code.claude.com/docs/en/slash-commands
-- **Mermaid 图表**：https://mermaid-js.github.io/mermaid/
-
-## Claude 上下文
-
-### 项目类型
-
-这是一个 **元项目** - 它提供为其他项目生成文档的命令。
-
-当用户询问 "wiki 命令"或"文档生成"时，他们指的是 `.claude/commands/` 中定义的自定义斜杠命令。
-
-### 关键洞察
-
-这个项目的力量来自：
-1. **AI 分析**代码结构
-2. **基于模板的生成**确保一致性
-3. **增量更新**提高效率
-4. **质量验证**保证可靠性
-
-### 成功指标
-
-成功意味着团队可以用减少 70% 的手动工作来维护全面、准确的文档。
+- 减少 70% 的文档维护工作量
+- 文档质量分数 ≥ 80 分
+- API 文档覆盖率 ≥ 85%
+- 模块文档覆盖率 ≥ 90%
+- 代码示例准确率 ≥ 95%
 
 ---
 
-**最后更新**：2025-01-03
-**版本**：1.0.0
+**版本**: 1.0.0
+**最后更新**: 2025-01-04
