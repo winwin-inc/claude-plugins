@@ -1,10 +1,40 @@
 ---
-description: Wiki 文档生成器 v2.0 - 配置驱动的文档生成工具
+description: Wiki 文档生成器 v3.0 - 配置驱动 + Skill 调用
 argument-hint: [--full]
 allowed-tools: all
+handoffs:
+  - label: 技术栈检测
+    agent: doc-generator.tech_stack_detection
+    prompt: 根据代码库依赖和导入语句，显式检测项目使用的技术栈
+    send: false
+
+  - label: 模块扫描
+    agent: doc-generator.module_scanning
+    prompt: 扫描代码库结构，识别所有模块和组件
+    send: false
+
+  - label: 内容提取
+    agent: doc-generator.content_extraction
+    prompt: 从源代码中提取文档内容，包括函数签名、类定义、注释等
+    send: false
+
+  - label: 大纲生成
+    agent: doc-generator.outline_generation
+    prompt: 根据模块规模生成 1-4 层文档结构
+    send: false
+
+  - label: 内容生成
+    agent: doc-generator.content_generation
+    prompt: 使用模板变量填充自动生成文档内容
+    send: false
+
+  - label: 索引生成
+    agent: doc-generator.index_generation
+    prompt: 生成文档目录索引和交叉引用
+    send: false
 ---
 
-# Wiki 文档生成命令（v2.0）
+# Wiki 文档生成命令（v3.0）
 
 ## 任务描述
 
@@ -18,6 +48,37 @@ allowed-tools: all
 - **部分成功机制**：保留成功生成的文档，跳过失败的，生成错误报告
 - **中文文件名**：生成文档使用中文文件名（如 `快速开始.md`）
 - **分层目录结构**：按照参考项目标准组织文档
+- **Skill 集成**：使用 doc-generator skills 完成各个生成步骤
+- **可视化流程**：使用 Mermaid 图表展示生成流程和架构
+
+## 整体流程图
+
+```mermaid
+flowchart TD
+    A[开始: /wiki-generate] --> B[配置验证]
+    B --> C{配置有效?}
+    C -->|否| D[报错并退出]
+    C -->|是| E[读取配置参数]
+    E --> F[技术栈显式检测<br/>doc-generator.tech_stack_detection]
+    F --> G[创建目录结构]
+    G --> H[文档生成主流程]
+
+    H --> I1[必需文档 00-09<br/>9个核心文档]
+    H --> I2[条件文档<br/>数据模型/API/任务队列]
+
+    I1 --> J[质量验证]
+    I2 --> J
+
+    J --> K{全部通过?}
+    K -->|是| L[✅ 成功输出]
+    K -->|否| M[生成错误报告]
+    M --> N[⚠️ 部分成功输出]
+
+    style F fill:#e1f5ff
+    style H fill:#fff4e6
+    style L fill:#d4edda
+    style N fill:#fff3cd
+```
 
 ## 参数说明
 
@@ -61,6 +122,8 @@ GENERATE_TOC=$(jq -r '.generate_toc' "$CONFIG_FILE")  # true | false
 ```
 
 ### 3. 技术栈显式检测
+
+调用 **doc-generator.tech_stack_detection** skill：
 
 基于代码库中的依赖和导入，显式检测技术栈：
 
@@ -108,6 +171,13 @@ fi
 - `testing` → 生成 `测试策略.md`
 - `deployment` → 生成 `部署指南.md`
 
+**Skill 输出示例**：
+```json
+{
+  "detected_stack": ["datamodel", "api", "taskqueue", "testing", "deployment"]
+}
+```
+
 ### 4. 创建目录结构
 
 根据配置的语言创建分层目录：
@@ -149,6 +219,22 @@ docs/
 
 ### 5. 文档生成
 
+文档生成通过调用一系列 doc-generator skills 完成：
+
+```mermaid
+flowchart LR
+    A[5.1 模块扫描<br/>doc-generator.module_scanning] --> B[5.2 内容提取<br/>doc-generator.content_extraction]
+    B --> C[5.3 大纲生成<br/>doc-generator.outline_generation]
+    C --> D[5.4 内容生成<br/>doc-generator.content_generation]
+    D --> E[5.5 索引生成<br/>doc-generator.index_generation]
+
+    style A fill:#e3f2fd
+    style B fill:#e3f2fd
+    style C fill:#fff3e0
+    style D fill:#e8f5e9
+    style E fill:#fce4ec
+```
+
 #### 5.1 必需文档列表
 
 以下文档是必需的，必须生成：
@@ -176,18 +262,73 @@ docs/
 | FastAPI/Flask/Django REST | API 文档/API 接口 | api.md.template |
 | Celery/RQ | 任务队列/任务队列 | taskqueue.md.template |
 
-#### 5.3 文档生成流程
+#### 5.3 模块扫描
+
+调用 **doc-generator.module_scanning** skill：
+
+- 扫描项目根目录和子目录
+- 识别模块边界和组件
+- 返回模块列表和文件数
+
+**输出示例**：
+```json
+{
+  "modules": [
+    {"name": "core", "path": "src/core", "file_count": 15},
+    {"name": "api", "path": "src/api", "file_count": 8}
+  ]
+}
+```
+
+#### 5.4 内容提取
+
+调用 **doc-generator.content_extraction** skill：
+
+- 从源代码提取 API 签名
+- 提取类定义和继承关系
+- 提取文档字符串和注释
+
+**输出示例**：
+```json
+{
+  "classes": [
+    {"name": "UserService", "methods": ["create", "update", "delete"]}
+  ],
+  "functions": [
+    {"name": "authenticate", "signature": "def authenticate(username, password)"}
+  ]
+}
+```
+
+#### 5.5 大纲生成
+
+调用 **doc-generator.outline_generation** skill：
+
+- 根据模块规模确定文档层级（1-4 层）
+- 生成每个文档的章节结构
+- 返回 Markdown 大纲
+
+**规模规则**：
+- 小型模块（1-4 文件）→ 1 层文档
+- 中型模块（5-20 文件）→ 2 层文档
+- 大型模块（21-50 文件）→ 3 层文档
+- 超大型模块（>50 文件）→ 4 层文档
+
+#### 5.6 内容生成
+
+调用 **doc-generator.content_generation** skill：
 
 对每个文档：
 
 1. **读取模板**：从 `.claude/templates/{lang}/{template}` 读取
 2. **提取变量**：从代码库中提取变量值（项目名、版本号等）
 3. **填充变量**：使用提取的值替换模板中的 `{variable}` 占位符
-4. **添加必需元素**：
+4. **生成 Mermaid 图表**：根据文档类型生成对应的图表
+5. **添加必需元素**：
    - `<cite>` 块：引用的源文件列表
    - 目录索引：根据标题生成
    - Section sources：每个章节末尾标注来源
-5. **写入文件**：使用中文文件名写入到输出目录
+6. **写入文件**：使用中文文件名写入到输出目录
 
 **示例生成流程**（快速开始.md）：
 
@@ -232,6 +373,14 @@ $SECTION_SOURCES"
 # 8. 写入文件（使用中文文件名）
 echo "$FINAL_CONTENT" > "$OUTPUT_DIR/zh/content/00-快速开始.md"
 ```
+
+#### 5.7 索引生成
+
+调用 **doc-generator.index_generation** skill：
+
+- 为每个文档生成目录索引
+- 生成交叉引用链接
+- 更新主索引文件
 
 ### 6. 部分成功错误处理
 
@@ -279,6 +428,8 @@ fi
 
 对生成的文档进行基础自动化验证：
 
+#### 7.1 Markdown 格式验证
+
 ```bash
 # 验证清单
 VALIDATION_PASSED=0
@@ -313,6 +464,63 @@ done
 echo "✅ 质量验证完成: $VALIDATION_PASSED 通过, $VALIDATION_FAILED 失败"
 ```
 
+#### 7.2 Mermaid 图表验证
+
+```bash
+# 检查 Mermaid 图表语法
+for doc_file in "$OUTPUT_DIR"/{zh,en}/content/*.md; do
+    # 检查是否包含 Mermaid 代码块
+    if grep -q '```mermaid' "$doc_file"; then
+        # 提取所有 Mermaid 代码块
+        mermaid_blocks=$(sed -n '/^```mermaid$/,/^```$/p' "$doc_file")
+
+        # 验证语法（使用 mermaid-cli 或其他验证工具）
+        if [ -n "$mermaid_blocks" ]; then
+            # 基础语法检查
+            if ! echo "$mermaid_blocks" | grep -qE '^(flowchart|graph|sequenceDiagram|erDiagram|classDiagram|stateDiagram|gantt|pie|gitGraph)'; then
+                echo "❌ Mermaid 图表类型错误: $doc_file"
+                VALIDATION_FAILED=$((VALIDATION_FAILED + 1))
+            fi
+
+            # 检查节点 ID 唯一性（简化检查）
+            node_ids=$(echo "$mermaid_blocks" | grep -oE '\b[A-Z][a-zA-Z0-9_]*\b' | sort | uniq -d)
+            if [ -n "$node_ids" ]; then
+                echo "⚠️  Mermaid 节点 ID 可能重复: $doc_file"
+                echo "   重复的 ID: $node_ids"
+            fi
+
+            # 检查箭头语法
+            if echo "$mermaid_blocks" | grep -qE '-->|-->|\.\.|->'; then
+                :  # 箭头语法正确
+            else
+                echo "⚠️  Mermaid 箭头语法可能有问题: $doc_file"
+            fi
+        fi
+    fi
+done
+```
+
+**验证标准**：
+- ✅ Mermaid 代码块格式正确（` ```mermaid ` 开头，` ``` ` 结尾）
+- ✅ 图表类型有效（flowchart, graph, sequenceDiagram, erDiagram, classDiagram, stateDiagram, gantt, pie, gitGraph）
+- ✅ 节点 ID 唯一
+- ✅ 箭头语法正确（`-->`, `->`, `..>`, `.->` 等）
+- ✅ 支持中文标签和文本
+
+**Mermaid 图表类型映射**：
+
+| 文档类型 | 推荐图表类型 | 说明 |
+|---------|-------------|------|
+| architecture.md | `flowchart TD/LR` | 系统架构流程图 |
+| datamodel.md | `erDiagram` | 实体关系图 |
+| api.md | `sequenceDiagram` | API 调用时序图 |
+| deployment.md | `flowchart TD` | 部署流程图 |
+| testing.md | `flowchart LR` | 测试流程图 |
+| development.md | `flowchart TD` | 开发工作流 |
+| corefeatures.md | `flowchart TD` | 功能流程图 |
+| troubleshooting.md | `flowchart TD` | 问题诊断流程图 |
+| security.md | `flowchart TD` | 安全验证流程图 |
+
 ## 输出
 
 ### 成功输出
@@ -346,6 +554,21 @@ echo "✅ 质量验证完成: $VALIDATION_PASSED 通过, $VALIDATION_FAILED 失�
 - ✅ 每个文档包含 Section sources
 - ✅ Markdown 格式正确
 - ✅ 链接格式正确
+- ✅ Mermaid 图表语法正确
+
+### Mermaid 图表质量
+- ✅ 图表语法正确且可渲染
+- ✅ 节点命名清晰易懂
+- ✅ 图表类型符合场景（参考上方映射表）
+- ✅ 支持中文标签和文本
+- ✅ 节点 ID 唯一不重复
+- ✅ 箭头语法正确
+
+### Skill 调用质量
+- ✅ 所有 skills 按正确顺序调用（模块扫描 → 内容提取 → 大纲生成 → 内容生成 → 索引生成）
+- ✅ Skill 输出正确传递到下一步
+- ✅ 错误处理覆盖所有 skill 调用失败情况
+- ✅ Skill 调用与现有模板系统兼容
 
 ### 性能目标
 - 小型项目（< 100 文件）：< 15 秒
@@ -359,6 +582,8 @@ echo "✅ 质量验证完成: $VALIDATION_PASSED 通过, $VALIDATION_FAILED 失�
 3. **完全覆盖**：每次重新生成整个文档，不保留手动修改
 4. **配置驱动**：所有行为由配置文件控制
 5. **技术栈显式检测**：基于明确的规则检测技术栈，不依赖 AI 推测
+6. **Skill 协作**：通过 handoffs 机制实现 doc-generator skills 间的协作
+7. **可视化优先**：优先使用 Mermaid 图表展示复杂流程和架构
 
 ## 示例使用
 
@@ -391,6 +616,12 @@ ls docs/zh/content/
 
 ---
 
-**版本**: 2.0.0
-**最后更新**: 2025-01-04
+**版本**: 3.0.0
+**最后更新**: 2026-01-05
+**更新内容**:
+- 添加 Mermaid 流程图可视化文档生成流程
+- 集成 doc-generator skills（6 个 skills）通过 handoffs
+- 重构文档生成步骤为 skill 调用流程
+- 添加 Mermaid 图表验证步骤
+- 新增图表类型映射表
 **项目宪章**: 遵循所有 8 条核心原则

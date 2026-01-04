@@ -1,15 +1,25 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
 # {title}
 
 <cite>
 **本文档中引用的文件**
+<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
 ## 目录
+<!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
 
 ## 项目概述
 
+<!-- Claude: 从 README.md 的简介部分提取 -->
 {project_description}
 
 ### 项目背景
@@ -25,6 +35,7 @@
 
 ## 核心特性
 
+<!-- Claude: 从 README.md 的特性列表、功能章节提取 -->
 {core_features}
 
 **Section sources**
@@ -32,6 +43,7 @@
 
 ## 应用场景
 
+<!-- Claude: 从 README.md 的使用场景章节、docs/ 目录提取 -->
 {use_cases}
 
 **Section sources**
@@ -39,6 +51,7 @@
 
 ## 架构概览
 
+<!-- Claude: 从 docs/architecture.md、README.md 的架构章节提取 -->
 {architecture_overview}
 
 **Section sources**
@@ -59,4 +72,5 @@
 
 ## 参考来源
 
+<!-- Claude: 收集所有 section_sources 汇总 -->
 {sources}

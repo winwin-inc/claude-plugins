@@ -1,0 +1,142 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
+# API 参考文档
+
+<cite>
+**本文档中引用的文件**
+<!-- Claude: 列出所有 API 相关的源文件，使用 file:// 协议 -->
+{cite_files}
+</cite>
+
+## 目录
+<!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
+{toc}
+
+## API 概述
+
+<!-- Claude: 从 README.md 的 API 章节、docs/api.md 提取 -->
+{api_description}
+
+### 基本信息
+
+- **Base URL**: `{base_url}`
+- **认证方式**: {auth_type}
+- **数据格式**: {data_format}
+- **API 版本**: {api_version}
+
+**Section sources**
+{api_overview_sources}
+
+## 认证说明
+
+### 获取凭证
+
+<!-- Claude: 从认证相关的文档、配置文件提取 -->
+{auth_instructions}
+
+### 使用凭证
+
+```bash title="终端"
+# 示例：使用 Bearer Token
+curl -H "Authorization: Bearer {token}" {base_url}/endpoint
+```
+
+**Section sources**
+{auth_sources}
+
+## 通用参数
+
+### 请求头
+
+| 请求头 | 类型 | 必填 | 描述 | 示例 |
+|--------|------|------|------|------|
+{common_headers_table}
+
+### 查询参数
+
+| 参数名 | 类型 | 必填 | 描述 | 示例 |
+|--------|------|------|------|------|
+{common_query_params_table}
+
+### 响应格式
+
+**成功响应**:
+```json title="响应示例"
+{
+  "code": 0,
+  "message": "success",
+  "data": {}
+}
+```
+
+**错误响应**:
+```json title="错误示例"
+{
+  "code": -1,
+  "message": "错误描述",
+  "request_id": "req_123456"
+}
+```
+
+**Section sources**
+{common_params_sources}
+
+## API 端点列表
+
+<!-- Claude: 扫描所有 API 路由，生成端点列表 -->
+
+### {api_group_1}
+
+| 端点 | 方法 | 描述 |
+|------|------|------|
+{api_endpoints_table_1}
+
+### {api_group_2}
+
+| 端点 | 方法 | 描述 |
+|------|------|------|
+{api_endpoints_table_2}
+
+## 错误码
+
+| 错误码 | HTTP 状态码 | 描述 | 解决方案 |
+|--------|-------------|------|----------|
+{error_codes_table}
+
+**Section sources**
+{error_codes_sources}
+
+## 速率限制
+
+<!-- Claude: 从 API 配置、文档中提取速率限制信息 -->
+{rate_limit_info}
+
+**Section sources**
+{rate_limit_sources}
+
+## SDK 和工具
+
+### 官方 SDK
+
+- {sdk_1}
+- {sdk_2}
+
+### 开发工具
+
+- {tool_1}
+- {tool_2}
+
+**Section sources**
+{sdk_tools_sources}
+
+---
+
+## 参考来源
+
+<!-- Claude: 收集所有 section_sources 汇总 -->
+{sources}

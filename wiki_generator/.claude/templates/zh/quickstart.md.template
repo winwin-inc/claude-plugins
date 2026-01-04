@@ -1,18 +1,29 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
 # {title}
 
 <cite>
 **本文档中引用的文件**
+<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
 ## 目录
+<!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
 
 ## 简介
 
+<!-- Claude: 从 README.md 的前几段提取项目概述 -->
 {overview_summary}
 
 **Section sources**
+<!-- Claude: 根据当前章节内容列出引用的源文件和行号范围 -->
 {section_sources}
 
 ## 前置要求
@@ -20,9 +31,11 @@
 在开始使用 {project_name} 之前，请确保您的系统满足以下先决条件：
 
 ### 系统要求
+<!-- Claude: 从 README.md 的要求章节、requirements.txt、Dockerfile 提取 -->
 {system_requirements}
 
 ### 依赖软件
+<!-- Claude: 从 requirements.txt、package.json、pyproject.toml dependencies 提取 -->
 {dependencies}
 
 **Section sources**
@@ -32,21 +45,43 @@
 
 ### 安装
 
+<!-- Claude: 从 README.md 的安装章节、INSTALL.md、setup.py 提取 -->
 {installation_steps}
 
 ### 配置
 
+<!-- Claude: 从 README.md 的配置章节、.env.example、config/*.py 提取 -->
 {configuration_steps}
 
 ### 验证安装
 
-{verification_steps}
+{<!-- Claude: 代码示例格式建议：
+
+### 验证安装
+
+```bash title="终端"
+# 运行测试
+uv run pytest
+
+# 或使用 python
+python -m pytest
+
+# 检查版本
+{project_name} --version
+```
+
+**预期输出**:
+{verification_output}
+-->
+
+verification_steps}
 
 **Section sources**
 {getting_started_sources}
 
 ## 第一个示例
 
+<!-- Claude: 从 examples/、README.md 的快速开始章节提取最简单的示例 -->
 {first_example}
 
 **Section sources**
@@ -64,4 +99,5 @@
 
 ## 参考来源
 
+<!-- Claude: 收集所有 section_sources 汇总 -->
 {sources}

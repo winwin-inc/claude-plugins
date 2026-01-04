@@ -1,15 +1,25 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
 # {title}
 
 <cite>
 **Files cited in this document**
+<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
 ## Table of Contents
+<!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
 
 ## Development Setup
 
+<!-- Claude: 从 CONTRIBUTING.md、README.md 的开发章节提取 -->
 {development_setup}
 
 **Section sources**
@@ -38,6 +48,7 @@
 
 ## Testing
 
+<!-- Claude: 从 tests/ 目录结构、pytest 配置、README 测试章节提取 -->
 {testing_guide}
 
 **Section sources**
@@ -61,4 +72,5 @@
 
 ## Reference Sources
 
+<!-- Claude: 收集所有 section_sources 汇总 -->
 {sources}

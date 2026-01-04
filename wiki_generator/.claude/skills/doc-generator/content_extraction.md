@@ -497,5 +497,529 @@ fi
 
 ---
 
-**版本**: 1.0.0
-**最后更新**: 2026-01-04
+## 6. API 签名提取
+
+### extract_api_signatures()
+
+```bash
+#!/usr/bin/env bash
+# API 签名提取主函数
+# 用法: extract_api_signatures <project_dir>
+# 输出: JSON 格式的 API 端点信息
+# 支持: FastAPI, Flask, Django REST Framework
+
+extract_api_signatures() {
+    local project_dir=$1
+
+    echo "🔌 提取 API 签名..." >&2
+
+    # 1. FastAPI 提取
+    local fastapi_apis=$(extract_fastapi_apis "$project_dir")
+
+    # 2. Flask 提取
+    local flask_apis=$(extract_flask_apis "$project_dir")
+
+    # 3. Django REST 提取
+    local django_apis=$(extract_django_apis "$project_dir")
+
+    # 合并所有 API 签名
+    if command -v jq &> /dev/null; then
+        jq -s '{fastapi: .[0], flask: .[1], django: .[2] | add}' \
+            <<< "$fastapi_apis $flask_apis $django_apis"
+    else
+        echo "{\"fastapi\": $fastapi_apis, \"flask\": $flask_apis, \"django\": $django_apis}"
+    fi
+}
+
+# FastAPI 端点提取
+extract_fastapi_apis() {
+    local project_dir=$1
+
+    python3 - <<PYTHON_EOF
+import re
+import json
+import ast
+from pathlib import Path
+
+project_dir = Path("$project_dir")
+apis = []
+
+# 扫描所有 Python 文件
+for py_file in project_dir.rglob("*.py"):
+    if "test" in str(py_file) or "__pycache__" in str(py_file):
+        continue
+
+    try:
+        with open(py_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # 解析 AST
+        tree = ast.parse(content)
+
+        for node in ast.walk(tree):
+            # 查找函数定义
+            if isinstance(node, ast.FunctionDef):
+                # 检查是否为 FastAPI 路由装饰器
+                for decorator in node.decorator_list:
+                    decorator_str = ast.unparse(decorator) if hasattr(ast, 'unparse') else str(decorator)
+
+                    # 匹配 @app.get, @router.post 等
+                    route_match = re.search(r'\.(get|post|put|delete|patch)\(["\']([^"\']+)["\']', decorator_str)
+                    if route_match:
+                        method = route_match.group(1).upper()
+                        path = route_match.group(2)
+
+                        api_info = {
+                            "method": method,
+                            "path": path,
+                            "function": node.name,
+                            "file": str(py_file.relative_to(project_dir)),
+                            "line": node.lineno
+                        }
+
+                        # 提取参数
+                        args = [arg.arg for arg in node.args.args]
+                        if args:
+                            api_info["parameters"] = args
+
+                        # 提取返回类型
+                        if node.returns:
+                            return_type = ast.unparse(node.returns) if hasattr(ast, 'unparse') else str(node.returns)
+                            api_info["return_type"] = return_type
+
+                        apis.append(api_info)
+
+    except Exception:
+        continue
+
+print(json.dumps(apis, ensure_ascii=False, indent=2))
+PYTHON_EOF
+}
+
+# Flask 端点提取
+extract_flask_apis() {
+    local project_dir=$1
+
+    python3 - <<PYTHON_EOF
+import re
+import json
+import ast
+from pathlib import Path
+
+project_dir = Path("$project_dir")
+apis = []
+
+for py_file in project_dir.rglob("*.py"):
+    if "test" in str(py_file):
+        continue
+
+    try:
+        with open(py_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                for decorator in node.decorator_list:
+                    decorator_str = ast.unparse(decorator) if hasattr(ast, 'unparse') else str(decorator)
+
+                    # 匹配 @app.route, @bp.route
+                    route_match = re.search(r'\.route\(["\']([^"\']+)["\'].*?methods=\[([^\]]+)\]', decorator_str)
+                    if route_match:
+                        path = route_match.group(1)
+                        methods_str = route_match.group(2)
+                        methods = re.findall(r'["\']([A-Z]+)["\']', methods_str)
+
+                        for method in methods:
+                            api_info = {
+                                "method": method,
+                                "path": path,
+                                "function": node.name,
+                                "file": str(py_file.relative_to(project_dir)),
+                                "line": node.lineno
+                            }
+                            apis.append(api_info)
+
+    except Exception:
+        continue
+
+print(json.dumps(apis, ensure_ascii=False, indent=2))
+PYTHON_EOF
+}
+
+# Django REST 端点提取
+extract_django_apis() {
+    local project_dir=$1
+
+    python3 - <<PYTHON_EOF
+import re
+import json
+from pathlib import Path
+
+project_dir = Path("$project_dir")
+apis = []
+
+# 查找 urls.py 文件
+for urls_file in project_dir.rglob("urls.py"):
+    try:
+        with open(urls_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        # 匹配 path() 或 url() 模式
+        # path('api/users/', views.UserList.as_view(), name='user-list')
+        pattern = r'(?:path|url)\(["\']([^"\']+)["\'].*?,\s*(\w+)\.as_view\(\)'
+        matches = re.findall(pattern, content)
+
+        for path, view_class in matches:
+            api_info = {
+                "method": "GET/POST",  # 视图集通常支持多个方法
+                "path": path,
+                "view_class": view_class,
+                "file": str(urls_file.relative_to(project_dir))
+            }
+            apis.append(api_info)
+
+    except Exception:
+        continue
+
+print(json.dumps(apis, ensure_ascii=False, indent=2))
+PYTHON_EOF
+}
+```
+
+**输出示例**：
+
+```json
+{
+  "fastapi": [
+    {
+      "method": "GET",
+      "path": "/api/users",
+      "function": "list_users",
+      "file": "src/api/users.py",
+      "line": 15,
+      "parameters": ["skip", "limit"],
+      "return_type": "List[User]"
+    },
+    {
+      "method": "POST",
+      "path": "/api/users",
+      "function": "create_user",
+      "file": "src/api/users.py",
+      "line": 25,
+      "parameters": ["user"],
+      "return_type": "User"
+    }
+  ],
+  "flask": [],
+  "django": []
+}
+```
+
+---
+
+## 7. 类继承关系提取
+
+### extract_class_hierarchy()
+
+```bash
+#!/usr/bin/env bash
+# 类继承关系提取
+# 用法: extract_class_hierarchy <project_dir>
+# 输出: Mermaid classDiagram 格式
+
+extract_class_hierarchy() {
+    local project_dir=$1
+
+    echo "🏗️ 提取类继承关系..." >&2
+
+    python3 - <<PYTHON_EOF
+import re
+import ast
+from pathlib import Path
+from collections import defaultdict
+
+project_dir = Path("$project_dir")
+
+# 收集类信息
+classes = {}
+inheritance = []
+
+for py_file in project_dir.rglob("*.py"):
+    if "test" in str(py_file) or "__pycache__" in str(py_file):
+        continue
+
+    try:
+        with open(py_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        tree = ast.parse(content)
+
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef):
+                class_name = node.name
+
+                # 提取基类
+                bases = []
+                for base in node.bases:
+                    if isinstance(base, ast.Name):
+                        bases.append(base.id)
+                    elif isinstance(base, ast.Attribute):
+                        bases.append(ast.unparse(base) if hasattr(ast, 'unparse') else str(base))
+
+                # 提取方法
+                methods = []
+                for item in node.body:
+                    if isinstance(item, ast.FunctionDef):
+                        methods.append(item.name)
+
+                # 提取属性（类变量）
+                attributes = []
+                for item in node.body:
+                    if isinstance(item, ast.Assign):
+                        for target in item.targets:
+                            if isinstance(target, ast.Name):
+                                attributes.append(target.id)
+
+                classes[class_name] = {
+                    "file": str(py_file.relative_to(project_dir)),
+                    "methods": methods,
+                    "attributes": attributes
+                }
+
+                # 记录继承关系
+                for base in bases:
+                    inheritance.append((class_name, base))
+
+    except Exception:
+        continue
+
+# 生成 Mermaid classDiagram
+print("```mermaid")
+print("classDiagram")
+
+# 输出类定义
+for class_name, info in classes.items():
+    methods_str = "\\n    ".join(info["methods"][:5])  # 最多显示 5 个方法
+    if methods_str:
+        print(f"    class {class_name} {{")
+        print(f"        {methods_str}")
+        print("    }")
+    else:
+        print(f"    class {class_name}")
+
+# 输出继承关系
+for child, parent in inheritance:
+    print(f"    {child} --|> {parent}")
+
+print("```")
+PYTHON_EOF
+}
+```
+
+**输出示例**：
+
+```mermaid
+classDiagram
+    class UserController {
+        get_user()
+        create_user()
+        update_user()
+        delete_user()
+    }
+    class BaseController {
+        handle_request()
+        validate_input()
+    }
+    class AdminController {
+        grant_permission()
+        revoke_permission()
+    }
+    UserController --|> BaseController
+    AdminController --|> BaseController
+```
+
+---
+
+## 8. 配置文件解析
+
+### extract_configurations()
+
+```bash
+#!/usr/bin/env bash
+# 配置文件提取
+# 用法: extract_configurations <project_dir>
+# 输出: JSON 格式的配置信息
+
+extract_configurations() {
+    local project_dir=$1
+
+    echo "⚙️ 提取配置信息..." >&2
+
+    local configs="{}"
+
+    # 1. .env 文件
+    if [ -f "$project_dir/.env" ]; then
+        configs=$(merge_json "$configs" "$(parse_env_file "$project_dir/.env")")
+    fi
+
+    # 2. config.yaml / config.yml
+    for yaml_file in "$project_dir"/config.{yml,yaml}; do
+        if [ -f "$yaml_file" ]; then
+            configs=$(merge_json "$configs" "$(parse_yaml_file "$yaml_file")")
+            break
+        fi
+    done
+
+    # 3. settings.py (Django)
+    if [ -f "$project_dir/settings.py" ] || [ -f "$project_dir/config/settings.py" ]; then
+        configs=$(merge_json "$configs" "$(parse_settings_py "$project_dir")")
+    fi
+
+    echo "$configs"
+}
+
+# .env 文件解析
+parse_env_file() {
+    local env_file=$1
+
+    python3 - <<PYTHON_EOF
+import re
+import json
+
+env_path = "$env_file"
+
+try:
+    with open(env_path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+
+    config = {}
+    for line in lines:
+        line = line.strip()
+        # 跳过注释和空行
+        if not line or line.startswith('#'):
+            continue
+
+        # 匹配 KEY=VALUE 或 KEY="VALUE"
+        match = re.match(r'^([A-Z_][A-Z0-9_]*)=(.*)$', line)
+        if match:
+            key = match.group(1)
+            value = match.group(2).strip('"\'')  # 去除引号
+            config[key] = value
+
+    print(json.dumps(config, ensure_ascii=False, indent=2))
+
+except Exception:
+    print(json.dumps({}, ensure_ascii=False))
+PYTHON_EOF
+}
+
+# YAML 文件解析
+parse_yaml_file() {
+    local yaml_file=$1
+
+    if command -v python3 &> /dev/null; then
+        python3 - <<PYTHON_EOF
+import json
+import sys
+
+try:
+    import yaml
+except ImportError:
+    print(json.dumps({}, ensure_ascii=False))
+    sys.exit(0)
+
+yaml_path = "$yaml_file"
+
+try:
+    with open(yaml_path, 'r', encoding='utf-8') as f:
+        data = yaml.safe_load(f)
+
+    print(json.dumps(data, ensure_ascii=False, indent=2))
+
+except Exception:
+    print(json.dumps({}, ensure_ascii=False))
+PYTHON_EOF
+    else
+        echo "{}"
+    fi
+}
+
+# Django settings.py 解析
+parse_settings_py() {
+    local project_dir=$1
+
+    local settings_file
+    if [ -f "$project_dir/settings.py" ]; then
+        settings_file="$project_dir/settings.py"
+    elif [ -f "$project_dir/config/settings.py" ]; then
+        settings_file="$project_dir/config/settings.py"
+    else
+        echo "{}"
+        return
+    fi
+
+    python3 - <<PYTHON_EOF
+import re
+import json
+import ast
+
+settings_path = "$settings_file"
+
+try:
+    with open(settings_path, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    tree = ast.parse(content)
+
+    config = {}
+
+    # 提取大写配置项
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name):
+                    name = target.id
+                    # Django 设置通常是大写的
+                    if name.isupper() and len(name) >= 4:
+                        try:
+                            value = ast.literal_eval(node.value)
+                            if isinstance(value, (str, int, bool, list, dict)):
+                                config[name] = value
+                        except Exception:
+                            # 对于无法求值的表达式，尝试字符串形式
+                            config[name] = ast.unparse(node.value) if hasattr(ast, 'unparse') else str(node.value)
+
+    print(json.dumps(config, ensure_ascii=False, indent=2))
+
+except Exception:
+    print(json.dumps({}, ensure_ascii=False))
+PYTHON_EOF
+}
+```
+
+**输出示例**：
+
+```json
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "name": "myapp"
+  },
+  "redis": {
+    "url": "redis://localhost:6379"
+  },
+  "debug": true,
+  "allowed_hosts": ["localhost", "127.0.0.1"]
+}
+```
+
+---
+
+**版本**: 2.0.0
+**最后更新**: 2026-01-05
+**变更日志**:
+- v2.0.0: 添加 API 签名提取、类继承关系提取、配置文件解析功能
+- v1.0.0: 初始版本，支持 README、配置文件、Docstring、注释提取

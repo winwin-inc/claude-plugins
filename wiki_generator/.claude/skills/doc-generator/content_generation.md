@@ -2,9 +2,14 @@
 
 **功能**: 使用模板变量填充自动生成文档内容
 
-**生成方法**: 从模板文件读取，替换变量（`{{PROJECT_NAME}}`、`{{FEATURE_1}}` 等）
+**生成方法**: 从模板文件读取，替换变量（`{PROJECT_NAME}`、`{FEATURE_1}` 等）
 
 **性能目标**: 自动填充率 ≥ 70%
+
+**支持格式**:
+- 统一变量格式: `{variable_name}`
+- 代码示例: ` ```python title="file.py" `
+- 元数据头部: 包含生成时间、版本等信息
 
 ---
 
@@ -97,7 +102,9 @@ replace_var() {
     # 转义特殊字符
     local escaped_value=$(echo "$var_value" | sed 's/[[\.*^$()+?{|]/\\&/g')
 
-    # 替换所有 {{VAR_NAME}} 为实际值
+    # 替换所有 {VAR_NAME} 为实际值
+    # 支持新格式: {variable_name}
+    # 注意: 不再支持旧的 {{VAR_NAME}} 格式
     echo "$content" | sed "s/{{$var_name}}/$escaped_value/g"
 }
 ```
@@ -1244,3 +1251,132 @@ generate_document_content \
 
 **版本**: 1.0.0
 **最后更新**: 2026-01-04
+
+---
+
+## 元数据生成
+
+### generate_metadata()
+
+```bash
+# 生成文档元数据
+generate_metadata() {
+    local generation_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+    local doc_version="3.0.0"
+    local code_version=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
+    
+    cat <<METADATA
+---
+**生成时间**: $generation_time
+**文档版本**: $doc_version
+**基于代码版本**: $code_version
+**生成工具**: wiki-generator v3.0
+---
+
+METADATA
+}
+```
+
+---
+
+## 代码示例规范化
+
+### 代码块格式
+
+**标准格式**:
+```markdown
+```<language> title="<file_path>"
+<code_content>
+```
+
+**支持的语言**:
+- `python` - Python 代码
+- `bash` - Shell 命令
+- `env` - 环境变量配置
+- `json` - JSON 数据
+- `yaml` - YAML 配置
+- `javascript` - JavaScript 代码
+
+### 代码示例生成流程
+
+1. **识别代码类型**: 根据文件扩展名或内容判断
+2. **添加语言标识**: 在 ``` 后添加语言类型
+3. **添加 title 属性**: 标注文件路径或用途
+4. **提取代码内容**: 从源文件中读取
+5. **添加注释**: 关键步骤添加中文注释
+
+---
+
+## Mermaid 图表生成
+
+### 图表类型选择
+
+根据文档类型自动选择图表：
+
+```bash
+select_diagram_type() {
+    local doc_type=$1
+    
+    case $doc_type in
+        datamodel)
+            echo "erDiagram"
+            ;;
+        architecture)
+            echo "flowchart TD"
+            ;;
+        api)
+            echo "sequenceDiagram"
+            ;;
+        deployment)
+            echo "flowchart TD"
+            ;;
+        *)
+            echo "flowchart LR"
+            ;;
+    esac
+}
+```
+
+### 图表生成函数
+
+```bash
+generate_mermaid_diagram() {
+    local diagram_type=$1
+    local content=$2
+    
+    cat <<MERMAID
+\`\`\`mermaid
+$diagram_type
+$content
+\`\`\`
+MERMAID
+}
+```
+
+---
+
+## 质量检查
+
+### validate_generated_document()
+
+```bash
+# 验证生成的文档
+validate_generated_document() {
+    local doc_file=$1
+    
+    # 检查必需元素
+    check_metadata "$doc_file" || return 1
+    check_cite_block "$doc_file" || return 1
+    check_toc "$doc_file" || return 1
+    check_section_sources "$doc_file" || return 1
+    
+    # 检查代码块格式
+    check_code_blocks "$doc_file" || return 1
+    
+    # 检查 Mermaid 图表
+    check_mermaid_diagrams "$doc_file" || return 1
+    
+    echo "✅ 文档验证通过"
+    return 0
+}
+```

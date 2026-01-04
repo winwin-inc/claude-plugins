@@ -1,6 +1,13 @@
-# {{PROJECT_NAME}} 文档导航
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
 
-欢迎来到 {{PROJECT_NAME}} 项目文档。
+# {PROJECT_NAME} 文档导航
+
+欢迎来到 {PROJECT_NAME} 项目文档。
 
 ## 📚 文档目录
 
@@ -15,7 +22,7 @@
 
 ### 模块文档
 
-{{MODULE_INDEX}}
+{MODULE_INDEX}
 
 ### API 文档
 
@@ -30,20 +37,20 @@
 
 ### 按功能查找
 
-{{FUNCTION_INDEX}}
+{FUNCTION_INDEX}
 
 ### 按模块查找
 
-{{MODULE_LOOKUP}}
+{MODULE_LOOKUP}
 
 ## 📊 项目统计
 
-- **总模块数**: {{TOTAL_MODULES}}
-- **API 端点数**: {{TOTAL_ENDPOINTS}}
-- **代码覆盖率**: {{CODE_COVERAGE}}
-- **文档质量分数**: {{QUALITY_SCORE}}/100
+- **总模块数**: {TOTAL_MODULES}
+- **API 端点数**: {TOTAL_ENDPOINTS}
+- **代码覆盖率**: {CODE_COVERAGE}
+- **文档质量分数**: {QUALITY_SCORE}/100
 
 ---
 
-**最后更新**: {{LAST_UPDATE_TIME}}
-**文档版本**: {{DOC_VERSION}}
+**最后更新**: {LAST_UPDATE_TIME}
+**文档版本**: {DOC_VERSION}

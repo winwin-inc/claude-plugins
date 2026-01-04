@@ -1,11 +1,20 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
 # {title}
 
 <cite>
 **本文档中引用的文件**
+<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
 ## 目录
+<!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
 
 ## 系统架构
@@ -18,6 +27,7 @@
 ## 架构图
 
 ```mermaid
+<!-- Claude: 根据模块依赖关系生成 flowchart 图 -->
 {architecture_diagram}
 ```
 
@@ -26,6 +36,7 @@
 
 ## 核心组件
 
+<!-- Claude: 分析 src/ 目录结构，识别主要模块和组件 -->
 {core_components}
 
 **Section sources**
@@ -63,4 +74,5 @@
 
 ## 参考来源
 
+<!-- Claude: 收集所有 section_sources 汇总 -->
 {sources}

@@ -1,44 +1,51 @@
-# {{PROJECT_NAME}} 项目概览
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
+# {PROJECT_NAME} 项目概览
 
 ## 项目简介
 
-{{PROJECT_DESCRIPTION}}
+{PROJECT_DESCRIPTION}
 
 ## 技术栈
 
-- **语言**: {{PROGRAMMING_LANGUAGES}}
-- **框架**: {{FRAMEWORKS}}
-- **工具**: {{TOOLS}}
+- **语言**: {PROGRAMMING_LANGUAGES}
+- **框架**: {FRAMEWORKS}
+- **工具**: {TOOLS}
 
 ## 目录结构
 
 ```
-{{DIRECTORY_STRUCTURE}}
+{DIRECTORY_STRUCTURE}
 ```
 
 ## 快速开始
 
 ### 安装依赖
 
-{{INSTALLATION_STEPS}}
+{INSTALLATION_STEPS}
 
 ### 运行项目
 
-{{RUN_STEPS}}
+{RUN_STEPS}
 
 ## 核心功能
 
-{{CORE_FEATURES}}
+{CORE_FEATURES}
 
 ## 依赖项
 
-{{DEPENDENCIES}}
+{DEPENDENCIES}
 
 ## 许可证
 
-{{LICENSE}}
+{LICENSE}
 
 ---
 
-**生成时间**: {{GENERATION_TIME}}
-**文档版本**: {{DOC_VERSION}}
+**生成时间**: {GENERATION_TIME}
+**文档版本**: {DOC_VERSION}

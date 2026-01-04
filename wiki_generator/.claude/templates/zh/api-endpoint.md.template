@@ -1,0 +1,137 @@
+---
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.0
+---
+
+# {api_name}
+
+<cite>
+**本文档中引用的文件**
+<!-- Claude: 列出该 API 端点相关的源文件 -->
+{source_files}
+</cite>
+
+## 目录
+{toc}
+
+## API 概述
+
+<!-- Claude: 从 API 文档字符串、注释提取 -->
+{api_description}
+
+### 端点信息
+
+- **HTTP 方法**: {http_method}
+- **URL 路径**: `{url_path}`
+- **功能描述**: {endpoint_description}
+
+**Section sources**
+{endpoint_info_sources}
+
+## 请求参数
+
+### 路径参数
+
+| 参数名 | 类型 | 必填 | 描述 | 约束 | 示例 |
+|--------|------|------|------|------|------|
+{path_params_table}
+
+### 查询参数
+
+| 参数名 | 类型 | 必填 | 描述 | 示例 |
+|--------|------|------|------|------|
+{query_params_table}
+
+### 请求体
+
+**Content-Type**: {content_type}
+
+```json title="请求体示例"
+{request_body_example}
+```
+
+**请求字段说明**:
+
+| 字段名 | 类型 | 必填 | 描述 | 约束 | 默认值 |
+|--------|------|------|------|------|--------|
+{request_fields_table}
+
+**Section sources**
+{request_params_sources}
+
+## 响应
+
+### 成功响应
+
+**HTTP 状态码**: {success_status_code}
+
+```json title="响应示例"
+{response_example}
+```
+
+**响应字段说明**:
+
+| 字段名 | 类型 | 描述 |
+|--------|------|------|
+{response_fields_table}
+
+### 错误响应
+
+**HTTP 状态码**: {error_status_code}
+
+```json title="错误响应示例"
+{error_response_example}
+```
+
+**错误码说明**:
+
+| 错误码 | 描述 | 解决方案 |
+|--------|------|----------|
+{error_codes_table}
+
+**Section sources**
+{response_sources}
+
+## 请求示例
+
+### Python
+
+```python title="examples/{api_name}_example.py"
+<!-- Claude: 从 examples/ 目录或文档提取 Python 示例 -->
+{python_example}
+```
+
+### cURL
+
+```bash title="终端"
+<!-- Claude: 生成对应的 cURL 命令 -->
+{curl_example}
+```
+
+### Node.js
+
+```javascript title="examples/{api_name}_example.js"
+<!-- Claude: 提供 Node.js 示例（如果有） -->
+{nodejs_example}
+```
+
+**Section sources**
+{examples_sources}
+
+## 注意事项
+
+<!-- Claude: 从文档注释、README 提取使用注意事项 -->
+{usage_notes}
+
+## 相关 API
+
+- {related_api_1}
+- {related_api_2}
+
+---
+
+## 参考来源
+
+{sources}
