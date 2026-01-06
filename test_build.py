@@ -46,7 +46,7 @@ def check_wheel_contents(wheel_path: Path):
     checks = [
         ("wiki_generator/__init__.py", "包初始化文件"),
         (".claude/commands/wiki-generate.md", "命令定义文件"),
-        (".claude/templates/", "模板目录"),
+        (".claude-plugin/templates/wiki-generate/", "模板目录"),
         (".claude/wiki-config.json", "配置文件"),
     ]
 

@@ -320,7 +320,7 @@ flowchart LR
 
 对每个文档：
 
-1. **读取模板**：从 `.claude/templates/{lang}/{template}` 读取
+1. **读取模板**：从 `.claude-plugin/templates/wiki-generate/{lang}/{template}` 读取
 2. **提取变量**：从代码库中提取变量值（项目名、版本号等）
 3. **填充变量**：使用提取的值替换模板中的 `{variable}` 占位符
 4. **生成 Mermaid 图表**：根据文档类型生成对应的图表
@@ -334,7 +334,7 @@ flowchart LR
 
 ```bash
 # 1. 读取模板
-TEMPLATE_FILE=".claude/templates/zh/quickstart.md.template"
+TEMPLATE_FILE=".claude-plugin/templates/wiki-generate/zh/quickstart.md.template"
 
 # 2. 提取变量
 PROJECT_NAME=$(jq -r '.project_name' package.json 2>/dev/null || basename "$(pwd)")

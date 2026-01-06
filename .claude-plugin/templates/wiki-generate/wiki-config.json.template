@@ -7,7 +7,7 @@
     ".git",
     "coverage"
   ],
-  "template_dir": ".claude/templates",
+  "template_dir": ".claude-plugin/templates/wiki-generate",
   "quality_threshold": 80,
   "diagrams": {
     "enabled": true,
