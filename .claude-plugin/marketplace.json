@@ -1,0 +1,20 @@
+{
+  "name": "claude-plugins",
+  "version": "1.0.0",
+  "description": "Claude Code 插件市场 - 包含 Wiki Generator 和其他插件",
+  "owner": {
+    "name": "Repo Wiki Generator Team",
+    "url": "https://github.com/user/repo-wiki"
+  },
+  "plugins": [
+    {
+      "name": "wiki-generator",
+      "source": "./",
+      "description": "自动生成和维护项目 Wiki 文档的 Claude Code 插件",
+      "version": "3.0.0",
+      "author": {
+        "name": "Repo Wiki Generator Team"
+      }
+    }
+  ]
+}
