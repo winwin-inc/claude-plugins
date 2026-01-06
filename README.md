@@ -24,7 +24,20 @@
 
 ## 📦 安装
 
-### 方式一：从本地目录安装（推荐用于开发）
+### 方式一：从 GitHub 仓库安装（推荐）
+
+```bash
+# 在 Claude Code 中运行
+/plugin marketplace add winwin-inc/claude-plugins
+```
+
+然后安装插件：
+
+```bash
+/plugin install winwin-code-assit@winwin-inc/claude-plugins
+```
+
+### 方式二：从本地目录安装（用于开发）
 
 1. **克隆仓库**
    ```bash
@@ -32,24 +45,25 @@
    cd claude-plugins/repo-wiki
    ```
 
-2. **在 Claude Code 中安装**
+2. **在 Claude Code 中添加本地市场**
    ```bash
    # 在 Claude Code 中运行
-   /marketplace install directory /path/to/repo-wiki
+   /plugin marketplace add /path/to/claude-plugins
    ```
 
-### 方式二：从 GitHub 安装
+3. **安装插件**
+   ```bash
+   /plugin install winwin-code-assit@claude-plugins
+   ```
+
+### 方式三：使用 --plugin-dir 测试（开发模式）
 
 ```bash
-# 在 Claude Code 中运行
-/marketplace install github winwin-inc/claude-plugins
+# 在命令行中启动 Claude Code 并加载插件
+claude --plugin-dir /path/to/repo-wiki
 ```
 
-### 方式三：手动安装
-
-1. 将插件复制到本地目录
-2. 在 Claude Code 设置中添加插件路径
-3. 重启 Claude Code
+这种方式适合开发测试，无需安装即可使用插件。
 
 ## 🚀 使用方法
 
@@ -225,6 +239,58 @@ repo-wiki/
 
 ## 🔧 高级配置
 
+### 插件管理
+
+#### 列出已安装的市场
+
+```bash
+# 查看所有已添加的市场
+/plugin marketplace list
+```
+
+#### 浏览可用插件
+
+```bash
+# 查看来自所有市场的可用插件
+/plugin
+```
+
+#### 更新市场
+
+```bash
+# 从市场来源刷新插件列表
+/plugin marketplace update winwin-inc/claude-plugins
+```
+
+#### 移除市场
+
+```bash
+# 从配置中移除市场
+/plugin marketplace remove winwin-inc/claude-plugins
+```
+
+#### 配置团队市场
+
+在项目根目录的 `.claude/settings.json` 中配置自动市场安装：
+
+```json
+{
+  "extraKnownMarketplaces": {
+    "winwin-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "winwin-inc/claude-plugins"
+      }
+    }
+  },
+  "enabledPlugins": [
+    "winwin-code-assit@winwin-plugins"
+  ]
+}
+```
+
+当团队成员信任项目文件夹时，Claude Code 会自动安装这些市场和插件。
+
 ### 自定义文档模板
 
 1. 复制默认模板：
@@ -298,10 +364,11 @@ claude --plugin-dir /path/to/repo-wiki
 ### Q: 为什么命令无法识别？
 
 **A**: 请确保：
-1. 插件已正确安装
-2. Claude Code 已重启
-3. 命令文件在 `commands/` 目录（不是 `.claude-plugin/commands/`）
-4. `plugin.json` 配置正确
+1. 插件市场已正确添加：`/plugin marketplace list`
+2. 插件已安装：输入 `/plugin` 查看可用插件
+3. 命令文件在插件根目录的 `commands/` 目录
+4. `plugin.json` 配置正确且包含必需字段
+5. 如果使用 `--plugin-dir`，确保路径正确
 
 ### Q: Wiki 生成失败怎么办？
 
@@ -331,6 +398,16 @@ pnpm generate:docs
 
 可以扩展模板以支持更多语言。
 
+### Q: 如何创建自己的插件市场？
+
+**A**: 参考以下步骤：
+1. 创建 GitHub 仓库
+2. 在根目录添加 `.claude-plugin/marketplace.json` 文件
+3. 在 `plugins` 数组中列出你的插件
+4. 使用 `/plugin marketplace add owner/repo` 安装市场
+
+详见：[插件市场文档](https://code.claude.com/docs/zh-CN/plugin-marketplaces)
+
 ## 📝 更新日志
 
 ### v1.0.0 (2026-01-06)
@@ -355,9 +432,16 @@ pnpm generate:docs
 
 ## 🔗 相关链接
 
+### 官方文档
 - [Claude Code 官方文档](https://code.claude.com/docs)
-- [Claude Code 插件开发指南](https://code.claude.com/docs/en/plugins)
+- [插件开发指南](https://code.claude.com/docs/en/plugins)
+- [插件市场文档](https://code.claude.com/docs/zh-CN/plugin-marketplaces)
 - [约定式提交规范](https://www.conventionalcommits.org/)
+
+### 社区资源
+- [Building My First Claude Code Plugin](https://alexop.dev/posts/building-my-first-claude-code-plugin/) - 实用插件开发教程
+- [Claude Code Plugin 2025 指南](https://skywork.ai/blog/ai-agent/claude-code-plugin-2025-plugins-sonnet-4-5-developer-tools/) - 2025年插件系统更新
+- [如何用插件定制你的 Claude Code](https://sorrycc.com/claude-code-plugins) - 中文插件定制指南
 
 ## 👥 作者
 
