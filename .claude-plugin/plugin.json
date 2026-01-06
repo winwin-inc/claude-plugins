@@ -1,11 +1,15 @@
 {
-  "name": "wiki-generator",
+  "name": "winwin-claude-plugins",
   "description": "自动生成和维护项目 Wiki 文档的 Claude Code 插件",
-  "version": "3.0.0",
+  "version": "1.0.0",
   "author": {
-    "name": "Claude Plugins Team"
+    "name": "Winwin.Inc Team"
   },
-  "commands": ["./commands/wiki-generate.md"],
+  "commands": [
+    "./commands/commit.md",
+    "./commands/save-session.md",
+    "./commands/wiki-generate.md"
+  ],
   "homepage": "https://github.com/winwin-inc/claude-plugins",
   "repository": "https://github.com/winwin-inc/claude-plugins"
 }
