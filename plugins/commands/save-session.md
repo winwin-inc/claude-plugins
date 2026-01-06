@@ -23,7 +23,7 @@ last_num=$(ls docs/plans/*.md 2>/dev/null | \
            sed -n 's/.*\/\([0-9]\{3,\}\)-.*/\1/p' | \
            sort -rn | head -1)
 last_num=${last_num:-0}  # 如果没有文件，默认为0
-next_num=$((last_num + 1))
+let next_num=last_num+1
 serial=$(printf "%03d" $next_num)
 
 # 步骤2: 从 plan.md 提取标题生成摘要
