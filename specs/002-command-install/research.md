@@ -188,7 +188,7 @@ def parse_repo_with_subdir(url: str) -> tuple[str, str]:
         "url": "https://github.com/user/wiki-generator-repo",
         "description": "Wiki 文档生成器",
         "version": "1.0.0",
-        "author": "Repo Wiki Generator Team"
+        "author": "Claude Plugins Team"
       },
       "code-review": {
         "url": "https://github.com/user/code-review-command",

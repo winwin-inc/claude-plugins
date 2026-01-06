@@ -335,7 +335,7 @@ allowed-tools: Read, Write, Glob, Grep, Bash
 ```
 命令：wiki-generate
 版本：1.0.0
-作者：Repo Wiki Generator Team
+作者：Claude Plugins Team
 描述：Wiki 文档生成器
 
 📦 安装信息：

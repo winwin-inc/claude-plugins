@@ -244,7 +244,7 @@ MIGRATION_RULES = {
 
 1. 查看本文档的"常见问题"和"故障排除"部分
 2. 检查迁移报告（自动生成）
-3. 提交 Issue: [GitHub Issues](https://github.com/user/repo-wiki/issues)
+3. 提交 Issue: [GitHub Issues](https://github.com/winwin-inc/claude-plugins/issues)
 
 ---
 

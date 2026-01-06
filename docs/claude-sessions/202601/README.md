@@ -49,7 +49,7 @@
 - [返回根目录](../..)
 - [计划文档](../../plans/)
 - [执行日志](../execution-logs/history.log)
-- [项目主页](https://github.com/user/repo-wiki)
+- [项目主页](https://github.com/winwin-inc/claude-plugins)
 
 ---
 

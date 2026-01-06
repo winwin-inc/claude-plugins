@@ -13,8 +13,8 @@
 
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 1.0.0 | 2025-01-03 | 初始任务列表 | Repo Wiki Generator Team |
-| 2.0.0 | 2025-01-03 | 重新组织为 wiki-generator，更新项目结构和命名 | Repo Wiki Generator Team |
+| 1.0.0 | 2025-01-03 | 初始任务列表 | Claude Plugins Team |
+| 2.0.0 | 2025-01-03 | 重新组织为 wiki-generator，更新项目结构和命名 | Claude Plugins Team |
 
 ---
 

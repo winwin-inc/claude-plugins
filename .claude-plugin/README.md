@@ -8,7 +8,7 @@
 
 ```bash
 # 通过 Marketplace 安装
-/plugin marketplace add https://github.com/user/repo-wiki
+/plugin marketplace add https://github.com/winwin-inc/claude-plugins
 
 # 或本地安装
 /plugin marketplace add /path/to/repo-wiki
@@ -203,8 +203,8 @@
 
 ## 支持
 
-- **问题反馈**: [GitHub Issues](https://github.com/user/repo-wiki/issues)
-- **文档**: [项目 README](https://github.com/user/repo-wiki/blob/main/README.md)
+- **问题反馈**: [GitHub Issues](https://github.com/winwin-inc/claude-plugins/issues)
+- **文档**: [项目 README](https://github.com/winwin-inc/claude-plugins/blob/main/README.md)
 - **版本**: 3.0.0
 
 ## 许可证

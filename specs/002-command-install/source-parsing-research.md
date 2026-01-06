@@ -710,7 +710,7 @@ def handle_symlinks(path: Path) -> Path:
         "url": "https://github.com/user/wiki-generator-repo",
         "description": "Wiki 文档生成器",
         "version": "1.0.0",
-        "author": "Repo Wiki Generator Team",
+        "author": "Claude Plugins Team",
         "homepage": "https://github.com/user/wiki-generator-repo",
         "last_updated": "2025-01-03T08:00:00Z"
       },

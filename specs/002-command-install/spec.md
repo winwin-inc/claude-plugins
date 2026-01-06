@@ -392,7 +392,7 @@ wiki-generator install <source>
 ```
 命令：wiki.generate
 版本：1.0.0
-作者：Repo Wiki Generator Team
+作者：Claude Plugins Team
 描述：Wiki 文档生成器
 
 资源文件：
@@ -435,7 +435,7 @@ wiki-generator install <source>
         ".claude/templates/wiki-config.json.template"
       ],
       "metadata": {
-        "author": "Repo Wiki Generator Team",
+        "author": "Claude Plugins Team",
         "description": "Wiki 文档生成器"
       }
     }

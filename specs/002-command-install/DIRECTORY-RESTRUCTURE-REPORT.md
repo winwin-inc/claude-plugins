@@ -129,13 +129,13 @@ def get_package_claude_dir():
 **修改前**:
 ```toml
 [project.urls]
-Documentation = "https://github.com/user/repo-wiki/blob/main/wiki-generator/README.md"
+Documentation = "https://github.com/winwin-inc/claude-plugins/blob/main/wiki-generator/README.md"
 ```
 
 **修改后**:
 ```toml
 [project.urls]
-Documentation = "https://github.com/user/repo-wiki/blob/main/README-WIKI-GENERATOR.md"
+Documentation = "https://github.com/winwin-inc/claude-plugins/blob/main/README.md"
 ```
 
 ### 4. README-WIKI-GENERATOR.md - 更新路径引用

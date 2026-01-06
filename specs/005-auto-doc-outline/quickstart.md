@@ -19,8 +19,8 @@
 
 ```bash
 # 克隆仓库
-git clone https://github.com/user/repo-wiki.git
-cd repo-wiki
+git clone https://github.com/winwin-inc/claude-plugins.git
+cd claude-plugins
 
 # 切换到功能分支
 git checkout 5-auto-doc-outline

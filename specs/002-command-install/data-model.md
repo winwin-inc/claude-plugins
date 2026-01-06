@@ -199,7 +199,7 @@ InstalledCommand:
   ],
   "dependencies": [],
   "metadata": {
-    "author": "Repo Wiki Generator Team",
+    "author": "Claude Plugins Team",
     "description": "Wiki 文档生成器",
     "tags": ["documentation", "wiki"],
     "license": "MIT",

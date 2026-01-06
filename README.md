@@ -3,7 +3,7 @@
 > 自动生成和维护项目 Wiki 文档的 Claude Code 插件（v3.0）
 
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/user/repo-wiki)
+[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](https://github.com/winwin-inc/claude-plugins)
 
 ## 📖 简介
 
@@ -35,7 +35,7 @@ Wiki Generator v3.0 是一个强大的 Claude Code 插件,能够自动分析代�
 
 ```bash
 # 通过 Marketplace 安装（推荐）
-/plugin marketplace add https://github.com/user/repo-wiki
+/plugin marketplace add https://github.com/winwin-inc/claude-plugins
 
 # 或本地安装
 /plugin marketplace add /path/to/repo-wiki

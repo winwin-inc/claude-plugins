@@ -133,7 +133,7 @@ readme = "README.md"
 requires-python = ">=3.8"
 license = { text = "MIT" }
 authors = [
-    { name = "Repo Wiki Generator Team" }
+    { name = "Claude Plugins Team" }
 ]
 keywords = ["claude-code", "cli", "wiki", "generator", "installer"]
 classifiers = [
@@ -163,10 +163,10 @@ dev = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/user/repo-wiki"
-Documentation = "https://github.com/user/repo-wiki/blob/main/README-WIKI-GENERATOR.md"
-Repository = "https://github.com/user/repo-wiki"
-Issues = "https://github.com/user/repo-wiki/issues"
+Homepage = "https://github.com/winwin-inc/claude-plugins"
+Documentation = "https://github.com/winwin-inc/claude-plugins/blob/main/README.md"
+Repository = "https://github.com/winwin-inc/claude-plugins"
+Issues = "https://github.com/winwin-inc/claude-plugins/issues"
 ```
 
 **关键字段验证**：

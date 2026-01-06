@@ -69,8 +69,8 @@ repo-wiki/
   "version": "1.0.0",
   "description": "Claude Code 插件市场 - 包含 Wiki Generator 和其他插件",
   "owner": {
-    "name": "Repo Wiki Generator Team",
-    "url": "https://github.com/user/repo-wiki"
+    "name": "Claude Plugins Team",
+    "url": "https://github.com/winwin-inc/claude-plugins"
   },
   "plugins": [
     {
@@ -79,7 +79,7 @@ repo-wiki/
       "description": "自动生成和维护项目 Wiki 文档的 Claude Code 插件",
       "version": "3.0.0",
       "author": {
-        "name": "Repo Wiki Generator Team"
+        "name": "Claude Plugins Team"
       }
     }
   ]
@@ -94,11 +94,11 @@ repo-wiki/
   "description": "自动生成和维护项目 Wiki 文档的 Claude Code 插件",
   "version": "3.0.0",
   "author": {
-    "name": "Repo Wiki Generator Team"
+    "name": "Claude Plugins Team"
   },
   "commands": ["./commands/wiki-generate.md"],
-  "homepage": "https://github.com/user/repo-wiki",
-  "repository": "https://github.com/user/repo-wiki"
+  "homepage": "https://github.com/winwin-inc/claude-plugins",
+  "repository": "https://github.com/winwin-inc/claude-plugins"
 }
 ```
 
@@ -137,7 +137,7 @@ rm -rf .claude/  # 如果不需要 SpeckKit 命令
 
 \`\`\`bash
 # 通过 Marketplace 安装
-/plugin marketplace add https://github.com/user/repo-wiki
+/plugin marketplace add https://github.com/winwin-inc/claude-plugins
 
 # 或本地安装
 /plugin marketplace add /path/to/repo-wiki
@@ -273,7 +273,7 @@ Breaking Change:
 
   📦 安装方式:
   \`\`\`bash
-  /plugin marketplace add https://github.com/user/repo-wiki
+  /plugin marketplace add https://github.com/winwin-inc/claude-plugins
   \`\`\`
 
   ⚠️ Breaking Changes:
@@ -346,7 +346,7 @@ uvx wiki-generator
 **安装后 (v3.0)**:
 ```bash
 # 原生 Claude Code 集成
-/plugin marketplace add https://github.com/user/repo-wiki
+/plugin marketplace add https://github.com/winwin-inc/claude-plugins
 ```
 
 ### 代码行数对比

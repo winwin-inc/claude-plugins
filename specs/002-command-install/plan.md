@@ -13,8 +13,8 @@
 
 | 版本 | 日期 | 变更内容 | 作者 |
 |------|------|----------|------|
-| 1.0.0 | 2025-01-03 | 初始实现计划 | Repo Wiki Generator Team |
-| 1.1.0 | 2025-01-03 | 更新项目命名为 wiki-generator，使用 uvx 调用 | Repo Wiki Generator Team |
+| 1.0.0 | 2025-01-03 | 初始实现计划 | Claude Plugins Team |
+| 1.1.0 | 2025-01-03 | 更新项目命名为 wiki-generator，使用 uvx 调用 | Claude Plugins Team |
 
 ---
 
