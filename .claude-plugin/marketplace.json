@@ -1,5 +1,5 @@
 {
-  "name": "claude-plugins",
+  "name": "winwin-code-assist",
   "version": "1.0.0",
   "description": "Claude Code 增强工具集 - 提供 Wiki 文档生成、Git 提交助手和会话管理功能",
   "owner": {
@@ -18,13 +18,7 @@
       "commands": [
         "./commands/commit.md",
         "./commands/save-session.md",
-        "./commands/wiki-generate.md"
-      ],
-      "templates": [
-        "./templates/zh/",
-        "./templates/en/",
-        "./templates/"
-      ]
+        "./commands/wiki-generate.md" ]
     }
   ]
 }
