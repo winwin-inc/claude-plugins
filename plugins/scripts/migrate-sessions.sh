@@ -31,7 +31,31 @@ cp -r docs/claude-sessions/* docs/plans/sessions/
 # 4. 更新月度 README 中的链接
 echo ""
 echo "🔧 更新内部链接..."
-find docs/plans/sessions -name "README.md" -type f -exec sed -i 's|\.\./\.\./plans/|../../|g' {} \;
+python3 << 'PYTHON_EOF'
+import glob
+import os
+
+readme_files = glob.glob("docs/plans/sessions/**/README.md", recursive=True)
+updated_count = 0
+
+for readme_file in readme_files:
+    try:
+        with open(readme_file, 'r', encoding='utf-8') as f:
+            content = f.read()
+
+        original_content = content
+        content = content.replace('../../plans/', '../../')
+
+        if content != original_content:
+            with open(readme_file, 'w', encoding='utf-8') as f:
+                f.write(content)
+            updated_count += 1
+            print(f"  ✅ Updated: {readme_file}")
+    except Exception as e:
+        print(f"  ❌ Error updating {readme_file}: {e}")
+
+print(f"✅ 共更新了 {updated_count} 个文件")
+PYTHON_EOF
 
 # 5. 验证迁移
 echo ""
