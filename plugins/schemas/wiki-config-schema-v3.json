@@ -1,0 +1,216 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://repo-wiki.dev/schemas/wiki-config-schema-v3.json",
+  "title": "Wiki Generator Configuration Schema v3.1",
+  "description": "Wiki 文档生成器配置文件 schema，支持增量更新和智能合并",
+  "type": "object",
+  "required": ["language"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "配置文件版本",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$",
+      "default": "3.1.0"
+    },
+    "language": {
+      "type": "string",
+      "description": "文档语言",
+      "enum": ["zh", "en", "both"],
+      "default": "zh"
+    },
+    "output_dir": {
+      "type": "string",
+      "description": "输出目录",
+      "default": "docs"
+    },
+    "structure_template": {
+      "type": "string",
+      "description": "文档结构模板",
+      "enum": ["reference", "simple", "custom"],
+      "default": "reference"
+    },
+    "include_sources": {
+      "type": "boolean",
+      "description": "是否包含源文件引用",
+      "default": true
+    },
+    "generate_toc": {
+      "type": "boolean",
+      "description": "是否生成目录",
+      "default": true
+    },
+    "update_mode": {
+      "type": "object",
+      "description": "更新模式配置（v3.1 新增）",
+      "properties": {
+        "strategy": {
+          "type": "string",
+          "description": "更新策略",
+          "enum": ["full", "incremental"],
+          "default": "incremental"
+        },
+        "detect_changes": {
+          "type": "boolean",
+          "description": "是否检测变更",
+          "default": true
+        },
+        "preserve_manual_edits": {
+          "type": "boolean",
+          "description": "是否保留手动编辑",
+          "default": true
+        },
+        "merge_conflicts": {
+          "type": "string",
+          "description": "合并冲突处理策略",
+          "enum": ["skip", "overwrite", "ask"],
+          "default": "skip"
+        }
+      },
+      "default": {
+        "strategy": "incremental",
+        "detect_changes": true,
+        "preserve_manual_edits": true,
+        "merge_conflicts": "skip"
+      }
+    },
+    "change_detection": {
+      "type": "object",
+      "description": "变更检测配置（v3.1 新增）",
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "检测方法",
+          "enum": ["git", "hash", "both"],
+          "default": "both"
+        },
+        "base_commit": {
+          "type": "string",
+          "description": "基准 commit（留空自动检测）",
+          "pattern": "^[a-f0-9]{40}$|^$"
+        },
+        "exclude_patterns": {
+          "type": "array",
+          "description": "排除模式",
+          "items": {
+            "type": "string"
+          },
+          "default": ["tests/**", "*.test.*", "mocks/**"]
+        }
+      },
+      "default": {
+        "method": "both",
+        "base_commit": "",
+        "exclude_patterns": ["tests/**", "*.test.*", "mocks/**"]
+      }
+    },
+    "smart_merge": {
+      "type": "object",
+      "description": "智能合并配置（v3.1 新增）",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用智能合并",
+          "default": true
+        },
+        "region_markers": {
+          "type": "object",
+          "description": "区域标记格式",
+          "properties": {
+            "start": {
+              "type": "string",
+              "description": "区域开始标记",
+              "default": "<!-- WIKI-GEN-START: {name} -->"
+            },
+            "end": {
+              "type": "string",
+              "description": "区域结束标记",
+              "default": "<!-- WIKI-GEN-END: {name} -->"
+            }
+          },
+          "default": {
+            "start": "<!-- WIKI-GEN-START: {name} -->",
+            "end": "<!-- WIKI-GEN-END: {name} -->"
+          }
+        },
+        "manual_edit_markers": {
+          "type": "array",
+          "description": "手动编辑标记",
+          "items": {
+            "type": "string"
+          },
+          "default": ["<!-- MANUAL-EDIT -->", "<!-- KEEP -->"]
+        },
+        "similarity_threshold": {
+          "type": "number",
+          "description": "相似度阈值（0.0-1.0）",
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "default": 0.8
+        }
+      },
+      "default": {
+        "enabled": true,
+        "region_markers": {
+          "start": "<!-- WIKI-GEN-START: {name} -->",
+          "end": "<!-- WIKI-GEN-END: {name} -->"
+        },
+        "manual_edit_markers": ["<!-- MANUAL-EDIT -->", "<!-- KEEP -->"],
+        "similarity_threshold": 0.8
+      }
+    },
+    "metadata_tracking": {
+      "type": "object",
+      "description": "元数据追踪配置（v3.1 新增）",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "是否启用元数据追踪",
+          "default": true
+        },
+        "metadata_file": {
+          "type": "string",
+          "description": "元数据文件路径（支持 {output_dir} 变量）",
+          "default": "{output_dir}/.wiki-metadata/metadata.json"
+        },
+        "track_file_hashes": {
+          "type": "boolean",
+          "description": "是否追踪文件哈希",
+          "default": true
+        },
+        "track_dependencies": {
+          "type": "boolean",
+          "description": "是否追踪依赖关系",
+          "default": true
+        }
+      },
+      "default": {
+        "enabled": true,
+        "metadata_file": "{output_dir}/.wiki-metadata/metadata.json",
+        "track_file_hashes": true,
+        "track_dependencies": true
+      }
+    },
+    "sections": {
+      "type": "object",
+      "description": "文档节配置",
+      "properties": {
+        "required": {
+          "type": "array",
+          "description": "必需文档列表",
+          "items": {
+            "type": "string"
+          },
+          "default": ["quickstart", "overview", "techstack", "architecture", "corefeatures", "development", "deployment", "testing", "troubleshooting", "security"]
+        },
+        "optional": {
+          "type": "array",
+          "description": "可选文档列表",
+          "items": {
+            "type": "string"
+          },
+          "default": ["datamodel", "api", "taskqueue"]
+        }
+      }
+    }
+  }
+}
