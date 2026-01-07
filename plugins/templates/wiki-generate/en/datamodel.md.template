@@ -5,6 +5,29 @@
 **生成工具**: wiki-generator v3.0
 ---
 
+<!--
+AI Generation Instructions - Data Model Document
+
+1. Data Model Extraction Scope:
+   - Only include src/, lib/, app/, core/ and other source code directories
+   - Explicitly exclude: tests/, test/, __pycache__, node_modules, .git
+
+2. Data Model Recognition Rules:
+   - SQLAlchemy models (inheriting from Base or DeclarativeBase)
+   - Django models (inheriting from django.db.models.Model)
+   - Pydantic models (inheriting from BaseModel)
+   - Other ORM models (such as Tortoise ORM, Peewee, etc.)
+
+3. Explicitly Exclude:
+   - Do not extract data models from test files, fixtures, or mocks
+   - Do not extract test-specific models (such as TestModel, FakeModel)
+   - Ignore files with names containing "test", "mock", "fixture"
+
+4. Difference from Testing Strategy Document:
+   - This document: Only contains data models from production code
+   - Testing Strategy Document: Describes test code and test data usage
+-->
+
 # {title}
 
 <cite>

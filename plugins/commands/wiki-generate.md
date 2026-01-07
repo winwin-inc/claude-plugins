@@ -374,7 +374,35 @@ $SECTION_SOURCES"
 echo "$FINAL_CONTENT" > "$OUTPUT_DIR/zh/content/00-快速开始.md"
 ```
 
-#### 5.7 索引生成
+#### 5.7 数据模型文档生成特殊规则
+
+数据模型文档（`数据模型/数据模型.md`）有特殊的提取规则，以避免包含测试代码中的数据模型：
+
+**AI 提取约束**：
+
+扫描范围：
+- `src/`, `lib/`, `app/`, `core/` 等源代码目录
+- 明确排除：`tests/`, `test/`, `__pycache__`, `mocks/`, `fixtures/`
+
+排除规则：
+- 文件名包含 "test", "mock", "fixture", "fake" 的文件
+- `tests/` 目录下的所有文件
+- 测试专用的模型类（如 TestModel, FakeModel, MockModel）
+
+模型识别：
+- SQLAlchemy 模型（`from sqlalchemy import ...`）
+- Django 模型（`from django.db import models`）
+- Pydantic 模型（`from pydantic import BaseModel`）
+- 其他生产环境的 ORM 模型（如 Tortoise ORM, Peewee, SQLAlchemy 等）
+
+**与测试策略文档的区别**：
+- **数据模型文档**：仅包含生产代码的数据模型，不包含测试代码中的模型
+- **测试策略文档**：描述测试代码结构、测试工具、fixtures 和测试数据的使用
+
+**实现方式**：
+在 `datamodel.md.template` 模板中包含明确的 AI 指令注释，指导 AI 在填充模板变量时应用上述过滤规则。
+
+#### 5.8 索引生成
 
 调用 **doc-generator.index_generation** skill：
 

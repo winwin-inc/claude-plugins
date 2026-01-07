@@ -5,6 +5,25 @@
 **生成工具**: wiki-generator v3.0
 ---
 
+<!--
+AI Generation Instructions - Testing Strategy Document
+
+1. Test Code Scanning Scope:
+   - tests/, test/ directories
+   - Source code directories containing test files
+   - pytest configuration files (pytest.ini, pyproject.toml)
+
+2. Content to Include:
+   - Test file structure
+   - Test fixtures and mocks
+   - Test models used in testing
+   - Testing tools and framework configuration
+
+3. Difference from Data Model Document:
+   - This document: Describes testing strategy and test code
+   - Data Model Document: Only contains data models from production code
+-->
+
 # {title}
 
 <cite>

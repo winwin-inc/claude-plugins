@@ -5,6 +5,29 @@
 **生成工具**: wiki-generator v3.0
 ---
 
+<!--
+AI 生成指令 - 数据模型文档
+
+1. 数据模型提取范围：
+   - 仅包含 src/, lib/, app/, core/ 等源代码目录
+   - 明确排除：tests/, test/, __pycache__, node_modules, .git
+
+2. 数据模型识别规则：
+   - SQLAlchemy 模型（继承自 Base 或 DeclarativeBase）
+   - Django 模型（继承自 django.db.models.Model）
+   - Pydantic 模型（继承自 BaseModel）
+   - 其他 ORM 模型（如 Tortoise ORM, Peewee 等）
+
+3. 明确排除：
+   - 不要从测试文件、fixture、mock 中提取数据模型
+   - 不要提取测试专用的模型（如 TestModel, FakeModel）
+   - 忽略文件名包含 "test", "mock", "fixture" 的文件
+
+4. 与测试策略文档的区别：
+   - 本文档：仅包含生产代码的数据模型
+   - 测试策略文档：描述测试代码和测试数据的使用
+-->
+
 # {title}
 
 <cite>
