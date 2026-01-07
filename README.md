@@ -51,7 +51,7 @@
 然后安装插件：
 
 ```bash
-/plugin install winwin-code-assit@winwin-inc/claude-plugins
+/plugin install winwin-code-assist@winwin-inc/claude-plugins
 ```
 
 ### 方式二：从本地目录安装（用于开发）
@@ -70,7 +70,7 @@
 
 3. **安装插件**
    ```bash
-   /plugin install winwin-code-assit@claude-plugins
+   /plugin install winwin-code-assist@claude-plugins
    ```
 
 ### 方式三：使用 --plugin-dir 测试（开发模式）
@@ -303,7 +303,7 @@ claude-plugins/
     }
   },
   "enabledPlugins": [
-    "winwin-code-assit@winwin-plugins"
+    "winwin-code-assist@winwin-plugins"
   ]
 }
 ```
