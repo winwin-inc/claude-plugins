@@ -1,26 +1,30 @@
----
-**生成时间**: {generation_time}
-**文档版本**: {doc_version}
-**基于代码版本**: {code_version}
-**生成工具**: wiki-generator v3.0
----
-
 # {title}
 
+<!-- WIKI-GEN-START: metadata -->
 <cite>
 **本文档中引用的文件**
 <!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.1
+<!-- WIKI-GEN-END: metadata -->
+
 ## 目录
+<!-- WIKI-GEN-START: toc -->
 <!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
+<!-- WIKI-GEN-END: toc -->
 
 ## 简介
 
+<!-- WIKI-GEN-START: overview -->
 <!-- Claude: 从 README.md 的前几段提取项目概述 -->
 {overview_summary}
+<!-- WIKI-GEN-END: overview -->
 
 **Section sources**
 <!-- Claude: 根据当前章节内容列出引用的源文件和行号范围 -->
@@ -30,6 +34,7 @@
 
 在开始使用 {project_name} 之前，请确保您的系统满足以下先决条件：
 
+<!-- WIKI-GEN-START: prerequisites -->
 ### 系统要求
 <!-- Claude: 从 README.md 的要求章节、requirements.txt、Dockerfile 提取 -->
 {system_requirements}
@@ -37,12 +42,14 @@
 ### 依赖软件
 <!-- Claude: 从 requirements.txt、package.json、pyproject.toml dependencies 提取 -->
 {dependencies}
+<!-- WIKI-GEN-END: prerequisites -->
 
 **Section sources**
 {prerequisites_sources}
 
 ## 快速开始
 
+<!-- WIKI-GEN-START: installation -->
 ### 安装
 
 <!-- Claude: 从 README.md 的安装章节、INSTALL.md、setup.py 提取 -->
@@ -75,29 +82,39 @@ python -m pytest
 -->
 
 verification_steps}
+<!-- WIKI-GEN-END: installation -->
 
 **Section sources**
 {getting_started_sources}
 
 ## 第一个示例
 
+<!-- WIKI-GEN-START: first-example -->
 <!-- Claude: 从 examples/、README.md 的快速开始章节提取最简单的示例 -->
 {first_example}
+<!-- WIKI-GEN-END: first-example -->
 
 **Section sources**
 {first_example_sources}
 
 ## 下一步
 
+<!-- WIKI-GEN-START: next-steps -->
 {next_steps}
+<!-- WIKI-GEN-END: next-steps -->
 
 ## 常见问题
 
+<!-- WIKI-GEN-START: faq -->
 {faq}
+<!-- WIKI-GEN-END: faq -->
 
 ---
 
+<!-- WIKI-GEN-START: references -->
 ## 参考来源
 
 <!-- Claude: 收集所有 section_sources 汇总 -->
 {sources}
+<!-- WIKI-GEN-END: references -->
+
