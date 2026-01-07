@@ -1,3 +1,9 @@
+---
+description: Git 提交助手 - 生成符合约定式提交规范的消息（带表情符号）
+argument-hint: [--no-verify]
+allowed-tools: Bash(git add:*), Bash(git status:*), Bash(git commit:*), Bash(git diff:*), Bash(git log:*), Bash(pnpm lint:*), Bash(pnpm build:*), Bash(pnpm generate:docs:*)
+---
+
 # Claude Command: Commit
 
 此命令帮助你创建格式规范的提交，包含符合约定式提交规范的消息和表情符号。

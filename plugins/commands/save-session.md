@@ -1,3 +1,8 @@
+---
+description: 保存 Claude Code 会话状态到 docs/plans/ 目录
+allowed-tools: Bash(mkdir:*), Bash(date:*), Bash(ls:*), Bash(sed:*), Bash(grep:*), Bash(cat:*), Bash(pwd:*), Bash(git branch:*), Read, Write
+---
+
 # Save Session Command
 
 请执行以下任务来保存当前会话的计划和执行结果:
