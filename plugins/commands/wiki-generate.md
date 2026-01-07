@@ -281,8 +281,6 @@ else
 fi
 ```
 
-### 3. 技术栈显式检测（v3.0 流程）
-
 ### 3. 技术栈显式检测
 
 调用 **doc-generator.tech_stack_detection** skill：
@@ -915,7 +913,6 @@ if [ "$UPDATE_MODE_ARG" != "full" ] && [ -n "$AFFECTED_DOCS" ]; then
 else
     # 完整生成流程
     echo "🔄 执行完整生成..."
-    # 调用现有的 v3.0 完整生成流程
 fi
 ```
 

@@ -1262,7 +1262,7 @@ generate_document_content \
 # 生成文档元数据
 generate_metadata() {
     local generation_time=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
-    local doc_version="3.0.0"
+    local doc_version="1.0.2"
     local code_version=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
     
     cat <<METADATA
@@ -1270,7 +1270,7 @@ generate_metadata() {
 **生成时间**: $generation_time
 **文档版本**: $doc_version
 **基于代码版本**: $code_version
-**生成工具**: wiki-generator v3.0
+**生成工具**: wiki-generator
 ---
 
 METADATA
