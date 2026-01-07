@@ -1,9 +1,16 @@
----
+# {title}
+
+<!-- WIKI-GEN-START: metadata -->
+<cite>
+**本文档中引用的文件**
+<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
+{cite_files}
+</cite>
+
 **生成时间**: {generation_time}
 **文档版本**: {doc_version}
 **基于代码版本**: {code_version}
-**生成工具**: wiki-generator v3.0
----
+**生成工具**: wiki-generator v3.1
 
 <!--
 AI 生成指令 - 数据模型文档
@@ -27,18 +34,13 @@ AI 生成指令 - 数据模型文档
    - 本文档：仅包含生产代码的数据模型
    - 测试策略文档：描述测试代码和测试数据的使用
 -->
-
-# {title}
-
-<cite>
-**本文档中引用的文件**
-<!-- Claude: 列出本文档引用的所有源文件，使用 file:// 协议 -->
-{cite_files}
-</cite>
+<!-- WIKI-GEN-END: metadata -->
 
 ## 目录
+<!-- WIKI-GEN-START: toc -->
 <!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
+<!-- WIKI-GEN-END: toc -->
 
 ## 数据模型概览
 

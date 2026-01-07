@@ -25,10 +25,10 @@ mkdir -p docs/plans/sessions/$(date +%Y%m)
 ```bash
 # 步骤1: 获取当前最大序号
 last_num=$(ls docs/plans/*.md 2>/dev/null | \
-           sed -n 's/.*\/\([0-9]\{3,\}\)-.*/\1/p' | \
+           sed -n -E 's/.*\/([0-9]{3,})-.*/\1/p' | \
            sort -rn | head -1)
 last_num=${last_num:-0}  # 如果没有文件，默认为0
-let next_num=last_num+1
+next_num=$((last_num + 1))
 serial=$(printf "%03d" $next_num)
 
 # 步骤2: 从 plan.md 提取标题生成摘要
@@ -43,8 +43,8 @@ fi
 # 步骤3: 转换为文件名格式（小写、连字符、限制30字符）
 summary=$(echo "$title" | \
           tr '[:upper:]' '[:lower:]' | \
-          sed 's/[^a-z0-9]\+/-/g' | \
-          sed 's/^-*\|-*$//g' | \
+          sed -E 's/[^a-z0-9]+/-/g' | \
+          sed -E 's/^-+|-+$//g' | \
           cut -c1-30)
 
 # 步骤4: 组合最终文件名
@@ -90,7 +90,7 @@ cat > "$session_file" << EOF
 
 - **执行时间**: $(date '+%Y-%m-%d %H:%M:%S')
 - **工作目录**: $(pwd)
-- **Git 分支**: $(git branch --show-current)
+- **Git 分支**: $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
 - **会话 ID**: [当前会话标识]
 
 ---
@@ -183,16 +183,24 @@ echo "✅ 会话摘要已保存: $session_file"
 
 **请将以下内容复制到 `docs/plans/sessions/$(date +%Y%m)/README.md`:**
 
-```markdown
-# Claude Code 会话存档 - $(date +%Y年%m月)
+```bash
+# 预定义变量（用于模板中的中文格式化日期）
+current_year=$(date +%Y)
+current_month=$(date +%m)
+current_day=$(date +%d)
+current_timestamp=$(date +%Y%m%d_%H%M%S)
+```
 
-本目录包含 $(date +%Y年%m月) 期间所有 Claude Code 会话的详细记录。
+```markdown
+# Claude Code 会话存档 - ${current_year}年${current_month}月
+
+本目录包含 ${current_year}年${current_month}月 期间所有 Claude Code 会话的详细记录。
 
 ---
 
 ## 会话列表
 
-### [$(date +%Y-%m-%d): 会话标题](session_$(date +%Y%m%d_%H%M%S).md)
+### [${current_year}-${current_month}-${current_day}: 会话标题](session_${current_timestamp}.md)
 
 **状态**: ✅ 已完成
 **会话ID**: [会话ID]

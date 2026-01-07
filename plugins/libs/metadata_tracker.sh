@@ -3,8 +3,23 @@
 # 版本: 3.1.0
 # 用法: source plugins/libs/metadata_tracker.sh
 
-# 确保 WIKI_CONFIG 环境变量已设置
-: "${WIKI_CONFIG:=.claude/wiki-config.json}"
+# WIKI_CONFIG 由调用方设置（通过 config_resolver.sh）
+if [ -z "$WIKI_CONFIG" ]; then
+    # 如果未设置，尝试导入配置解析库
+    if [ -f "$(dirname "${BASH_SOURCE[0]}")/config_resolver.sh" ]; then
+        source "$(dirname "${BASH_SOURCE[0]}")/config_resolver.sh"
+        WIKI_CONFIG=$(find_config_file)
+    fi
+
+    # 如果仍然未找到，报错
+    if [ -z "$WIKI_CONFIG" ]; then
+        echo "❌ 错误: WIKI_CONFIG 环境变量未设置" >&2
+        echo "💡 提示: 请先运行配置初始化流程" >&2
+        return 1
+    fi
+
+    export WIKI_CONFIG
+fi
 
 # 获取元数据文件路径（根据配置）
 # 元数据文件存储在用户配置的 output_dir 下的 .wiki-metadata/ 子目录

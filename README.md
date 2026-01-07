@@ -5,11 +5,28 @@
 ## ✨ 主要功能
 
 ### 📚 Wiki 文档生成器
-- **配置驱动**：通过 `.claude/wiki-config.json` 自定义生成行为
+
+#### 核心功能
+- **智能增量更新** - 只更新受代码变更影响的文档，性能提升 60-80%
+- **手动编辑保护** - 自动识别并保留用户手动编辑的内容
+- **智能变更检测** - Git diff + 哈希值双重检测机制
+- **元数据追踪** - 动态追踪文档与源文件的映射关系
+- **配置驱动**：通过 `{output_dir}/wiki-config.json` 自定义生成行为
 - **智能检测**：自动识别项目技术栈并生成相应文档
 - **多语言支持**：支持中文和英文文档生成
 - **分层结构**：按照项目标准组织文档（概述、架构、API、快速开始等）
 - **模板系统**：提供丰富的文档模板，支持自定义
+
+```bash
+# 生成 Wiki 文档（默认增量模式）
+/wiki-generate
+
+# 完整重新生成（覆盖所有现有文档）
+/wiki-generate --full
+
+# 显式增量更新
+/wiki-generate --incremental
+```
 
 ### 📝 Git 提交助手
 - **约定式提交**：自动生成符合规范的提交消息
@@ -60,7 +77,7 @@
 
 ```bash
 # 在命令行中启动 Claude Code 并加载插件
-claude --plugin-dir /path/to/repo-wiki
+claude --plugin-dir /path/to/claude-plugins
 ```
 
 这种方式适合开发测试，无需安装即可使用插件。
@@ -81,7 +98,9 @@ claude --plugin-dir /path/to/repo-wiki
 
 #### 配置文件
 
-在项目根目录创建 `.claude/wiki-config.json`：
+配置文件位于 `{output_dir}/wiki-config.json`。首次运行 `/wiki-generate` 时，系统会自动创建配置文件。
+
+默认位置：`docs/wiki-config.json`
 
 ```json
 {
@@ -219,7 +238,7 @@ docs/plans/sessions/
 ## 📁 项目结构
 
 ```
-repo-wiki/
+claude-plugins/
 ├── .claude-plugin/            # 插件配置
 │   ├── plugin.json            # 插件元数据
 │   ├── templates/             # Wiki 生成模板
@@ -373,7 +392,7 @@ claude --plugin-dir /path/to/repo-wiki
 ### Q: Wiki 生成失败怎么办？
 
 **A**: 检查：
-1. `.claude/wiki-config.json` 配置是否正确
+1. `{output_dir}/wiki-config.json` 配置是否正确（默认为 `docs/wiki-config.json`）
 2. 输出目录是否有写权限
 3. 模板文件是否完整
 4. 查看错误日志获取详细信息
@@ -418,7 +437,7 @@ pnpm generate:docs
 - 会话管理（保存/恢复/迁移）
 
 #### 🔧 改进
-- 优化插件目录结构以符合 Claude Code 规范
+- 优化插件目录结构以符合 Claude Code 规范`
 - 简化 plugin.json 配置
 - 添加多语言模板支持
 

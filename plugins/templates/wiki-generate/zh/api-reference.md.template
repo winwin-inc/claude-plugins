@@ -1,21 +1,23 @@
----
-**生成时间**: {generation_time}
-**文档版本**: {doc_version}
-**基于代码版本**: {code_version}
-**生成工具**: wiki-generator v3.0
----
-
 # API 参考文档
 
+<!-- WIKI-GEN-START: metadata -->
 <cite>
 **本文档中引用的文件**
 <!-- Claude: 列出所有 API 相关的源文件，使用 file:// 协议 -->
 {cite_files}
 </cite>
 
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.1
+<!-- WIKI-GEN-END: metadata -->
+
 ## 目录
+<!-- WIKI-GEN-START: toc -->
 <!-- Claude: 扫描文档中的所有标题，生成目录索引 -->
 {toc}
+<!-- WIKI-GEN-END: toc -->
 
 ## API 概述
 

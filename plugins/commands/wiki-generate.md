@@ -1,6 +1,6 @@
 ---
-description: Wiki 文档生成器 v3.0 - 配置驱动 + Skill 调用
-argument-hint: [--full]
+description: Wiki 文档生成器 - 配置驱动 + Skill 调用
+argument-hint: [--full|--incremental]
 allowed-tools: all
 handoffs:
   - label: 技术栈检测
@@ -32,19 +32,32 @@ handoffs:
     agent: doc-generator.index_generation
     prompt: 生成文档目录索引和交叉引用
     send: false
+
+  - label: 变更检测
+    agent: doc-generator.change_detection
+    prompt: 检测代码变更并映射到受影响的文档
+    send: false
+
+  - label: 智能合并
+    agent: doc-generator.smart_merge
+    prompt: 智能合并现有文档和新生成内容，保留手动编辑
+    send: false
 ---
 
-# Wiki 文档生成命令（v3.0）
+# Wiki 文档生成命令
 
 ## 任务描述
 
-根据 `.claude/wiki-config.json` 配置文件自动分析代码库并生成项目 Wiki 文档。采用配置驱动、技术栈显式检测、完全覆盖策略。
+根据 `{output_dir}/wiki-config.json` 配置文件自动分析代码库并生成项目 Wiki 文档。支持增量更新和智能合并功能。
+
+配置文件位于输出目录中（默认为 `docs/wiki-config.json`），首次运行时自动创建。
 
 ## 核心特性
 
-- **配置驱动**：读取 `.claude/wiki-config.json` 决定生成行为
+- **配置驱动**：读取 `{output_dir}/wiki-config.json` 决定生成行为
+- **增量更新**：智能检测代码变更，只更新受影响的文档
+- **手动编辑保护**：智能合并保留用户手动编辑的内容
 - **技术栈显式检测**：基于检测到的框架/库生成条件文档
-- **完全覆盖策略**：每次重新生成整个文档，不保留手动修改
 - **部分成功机制**：保留成功生成的文档，跳过失败的，生成错误报告
 - **中文文件名**：生成文档使用中文文件名（如 `快速开始.md`）
 - **分层目录结构**：按照参考项目标准组织文档
@@ -55,34 +68,37 @@ handoffs:
 
 ```mermaid
 flowchart TD
-    A[开始: /wiki-generate] --> B[配置验证]
-    B --> C{配置有效?}
-    C -->|否| D[报错并退出]
-    C -->|是| E[读取配置参数]
-    E --> F[技术栈显式检测<br/>doc-generator.tech_stack_detection]
-    F --> G[创建目录结构]
-    G --> H[文档生成主流程]
+    A[开始: /wiki-generate] --> B{更新模式?}
+    B -->|--full| C[完全重新生成]
+    B -->|无参数<br/>默认增量| D[增量更新]
+    B -->|--incremental| D
 
-    H --> I1[必需文档 00-09<br/>9个核心文档]
-    H --> I2[条件文档<br/>数据模型/API/任务队列]
+    C --> C1[配置验证]
+    C1 --> C2[技术栈检测]
+    C2 --> C3[文档生成主流程]
+    C3 --> C4[质量验证]
+    C4 --> C5[✅ 完整输出]
 
-    I1 --> J[质量验证]
-    I2 --> J
+    D --> D1[配置验证]
+    D1 --> D2[加载元数据]
+    D2 --> D3[变更检测<br/>doc-generator.change_detection]
+    D3 --> D4{有变更?}
+    D4 -->|否| D5[✅ 无需更新]
+    D4 -->|是| D6[智能生成与合并]
+    D6 --> D7[更新元数据]
+    D7 --> D8[✅ 增量输出]
 
-    J --> K{全部通过?}
-    K -->|是| L[✅ 成功输出]
-    K -->|否| M[生成错误报告]
-    M --> N[⚠️ 部分成功输出]
-
-    style F fill:#e1f5ff
-    style H fill:#fff4e6
-    style L fill:#d4edda
-    style N fill:#fff3cd
+    style C fill:#e1f5ff
+    style D fill:#fff4e6
+    style D3 fill:#e8f5e9
+    style D6 fill:#d4edda
+    style D8 fill:#d4edda
 ```
 
 ## 参数说明
 
-- `--full`: 完整生成所有文档（根据配置生成所有文档）
+- `--full`: 完整生成所有文档（忽略增量模式，重新生成所有文档）
+- `--incremental`: 显式启用增量更新模式（默认行为）
 
 ## 执行步骤
 
@@ -91,21 +107,35 @@ flowchart TD
 首先读取并验证配置文件：
 
 ```bash
-CONFIG_FILE=".claude/wiki-config.json"
+# 1. 导入配置解析库
+source plugins/libs/config_resolver.sh
 
-# 检查配置文件是否存在
-if [ ! -f "$CONFIG_FILE" ]; then
-    echo "❌ 配置文件不存在: $CONFIG_FILE"
-    echo "💡 建议：运行 wiki-generator --init 创建配置文件"
-    exit 1
+# 2. 查找或初始化配置文件
+CONFIG_FILE=$(find_config_file)
+
+if [ -z "$CONFIG_FILE" ] || [ ! -f "$CONFIG_FILE" ]; then
+    echo "📝 未找到配置文件，正在初始化..."
+
+    # 交互式询问 output_dir（提供默认值 docs）
+    read -p "请输入文档输出目录 [docs]: " user_output_dir
+    output_dir=${user_output_dir:-"docs"}
+
+    echo "✅ 使用输出目录: $output_dir"
+
+    # 初始化配置文件
+    CONFIG_FILE=$(init_config_file "$output_dir")
+    export WIKI_CONFIG="$CONFIG_FILE"
+else
+    export WIKI_CONFIG="$CONFIG_FILE"
 fi
 
-# 验证配置文件
-wiki-generator --validate
-if [ $? -ne 0 ]; then
+# 3. 验证配置文件
+if ! validate_config "$CONFIG_FILE"; then
     echo "❌ 配置文件验证失败"
     exit 1
 fi
+
+echo "✅ 配置文件: $CONFIG_FILE"
 ```
 
 ### 2. 读取配置
@@ -120,6 +150,138 @@ STRUCTURE_TEMPLATE=$(jq -r '.structure_template' "$CONFIG_FILE")  # "reference" 
 INCLUDE_SOURCES=$(jq -r '.include_sources' "$CONFIG_FILE")  # true | false
 GENERATE_TOC=$(jq -r '.generate_toc' "$CONFIG_FILE")  # true | false
 ```
+
+#### 2.1 读取增量更新配置
+
+```bash
+# 读取更新模式配置
+UPDATE_MODE=$(jq -r '.update_mode.strategy // "incremental"' "$CONFIG_FILE")  # "full" | "incremental"
+DETECT_CHANGES=$(jq -r '.update_mode.detect_changes // true' "$CONFIG_FILE")  # true | false
+PRESERVE_MANUAL_EDITS=$(jq -r '.update_mode.preserve_manual_edits // true' "$CONFIG_FILE")  # true | false
+MERGE_CONFLICTS=$(jq -r '.update_mode.merge_conflicts // "skip"' "$CONFIG_FILE")  # "skip" | "overwrite" | "ask"
+
+# 读取变更检测配置
+CHANGE_METHOD=$(jq -r '.change_detection.method // "both"' "$CONFIG_FILE")  # "git" | "hash" | "both"
+EXCLUDE_PATTERNS=$(jq -r '.change_detection.exclude_patterns[] // ["tests/**", "*.test.*", "mocks/**"]' "$CONFIG_FILE")
+
+# 读取智能合并配置
+SMART_MERGE_ENABLED=$(jq -r '.smart_merge.enabled // true' "$CONFIG_FILE")  # true | false
+SIMILARITY_THRESHOLD=$(jq -r '.smart_merge.similarity_threshold // 0.8' "$CONFIG_FILE")  # 0.0-1.0
+
+# 读取元数据追踪配置
+METADATA_ENABLED=$(jq -r '.metadata_tracking.enabled // true' "$CONFIG_FILE")  # true | false
+METADATA_FILE=$(jq -r '.metadata_tracking.metadata_file // "{output_dir}/.wiki-metadata/metadata.json"' "$CONFIG_FILE")
+```
+
+#### 2.2 配置迁移函数
+
+检查配置版本并自动迁移：
+
+```bash
+#!/usr/bin/env bash
+# 配置迁移函数（内联 Python）
+# 用法: migrate_config <config_file>
+
+migrate_config() {
+    local config_file=$1
+
+    # 使用内联 Python 检查和迁移配置
+    python3 <<PYTHON_EOF
+import json
+from pathlib import Path
+
+config_path = Path("$config_file")
+
+if not config_path.exists():
+    print(f"❌ 配置文件不存在: {config_path}")
+    exit(1)
+
+with open(config_path, 'r', encoding='utf-8') as f:
+    config = json.load(f)
+
+# 检查版本
+version = config.get('version', '2.0.0')
+
+# 添加默认配置
+if version < '1.0.2':
+    print("🔄 配置迁移: v${version} → v1.0.2")
+
+    config['version'] = '1.0.2'
+
+    if 'update_mode' not in config:
+        config['update_mode'] = {
+            'strategy': 'incremental',
+            'detect_changes': True,
+            'preserve_manual_edits': True,
+            'merge_conflicts': 'skip'
+        }
+        print("  ✅ 添加 update_mode 配置")
+
+    if 'change_detection' not in config:
+        config['change_detection'] = {
+            'method': 'both',
+            'base_commit': '',
+            'exclude_patterns': ['tests/**', '*.test.*', 'mocks/**']
+        }
+        print("  ✅ 添加 change_detection 配置")
+
+    if 'smart_merge' not in config:
+        config['smart_merge'] = {
+            'enabled': True,
+            'region_markers': {
+                'start': '<!-- WIKI-GEN-START: {name} -->',
+                'end': '<!-- WIKI-GEN-END: {name} -->'
+            },
+            'manual_edit_markers': ['<!-- MANUAL-EDIT -->', '<!-- KEEP -->']
+        }
+        print("  ✅ 添加 smart_merge 配置")
+
+    if 'metadata_tracking' not in config:
+        config['metadata_tracking'] = {
+            'enabled': True,
+            'metadata_file': '{output_dir}/.wiki-metadata/metadata.json',
+            'track_file_hashes': True,
+            'track_dependencies': True
+        }
+        print("  ✅ 添加 metadata_tracking 配置")
+
+    # 保存迁移后的配置
+    with open(config_path, 'w', encoding='utf-8') as f:
+        json.dump(config, f, indent=2, ensure_ascii=False)
+
+    print(f"✅ 配置已迁移到 v{config['version']}")
+else:
+    print(f"✅ 配置版本已是最新: v{version}")
+PYTHON_EOF
+}
+
+# 执行配置迁移
+migrate_config "$CONFIG_FILE"
+```
+
+### 2.3 检查更新模式
+
+```bash
+# 检查命令行参数
+UPDATE_MODE_ARG=""
+if [[ " $@ " =~ " --full " ]]; then
+    UPDATE_MODE_ARG="full"
+    echo "🔄 模式: 完全重新生成"
+elif [[ " $@ " =~ " --incremental " ]]; then
+    UPDATE_MODE_ARG="incremental"
+    echo "🚀 模式: 增量更新"
+else
+    # 使用配置文件中的设置
+    UPDATE_MODE_ARG="$UPDATE_MODE"
+    if [ "$UPDATE_MODE_ARG" = "incremental" ]; then
+        echo "🚀 模式: 增量更新（默认）"
+    else
+        echo "🔄 模式: 完全重新生成"
+    fi
+fi
+```
+
+### 3. 技术栈显式检测（v3.0 流程）
 
 ### 3. 技术栈显式检测
 
@@ -620,14 +782,263 @@ done
 ## 示例使用
 
 ```bash
-# 生成完整文档
+# 默认：增量更新（智能检测变更）
+/wiki-generate
+
+# 完整重新生成所有文档
 /wiki-generate --full
 
+# 显式增量更新
+/wiki-generate --incremental
+
 # 验证配置后生成
-wiki-generator --validate && /wiki-generate --full
+wiki-generator --validate && /wiki-generate
 
 # 查看生成的文档
 ls docs/zh/content/
+```
+
+---
+
+## 增量更新流程
+
+### 增量更新完整流程
+
+当使用增量模式时（默认或 `--incremental`），执行以下流程：
+
+```bash
+#!/usr/bin/env bash
+# 增量更新主流程
+
+# 1. 加载元数据追踪库
+source plugins/libs/metadata_tracker.sh
+
+# 2. 初始化元数据
+init_metadata
+
+# 3. 获取当前 Git commit
+CURRENT_COMMIT=$(git rev-parse HEAD)
+LAST_COMMIT=$(get_last_commit)
+
+# 4. 变更检测
+if [ "$DETECT_CHANGES" = "true" ] && [ "$UPDATE_MODE_ARG" != "full" ]; then
+    echo "🔍 检测代码变更..."
+
+    # 调用 change_detection skill
+    changes_json=$(python3 - <<PYTHON_EOF
+import json
+import subprocess
+
+# 这里调用 doc-generator.change_detection skill
+# 返回 JSON: {changed_files, affected_documents, ...}
+changes = {
+    "base_commit": "$LAST_COMMIT",
+    "current_commit": "$CURRENT_COMMIT",
+    "changed_files": ["src/models/user.py", "src/api/users.py"],
+    "affected_documents": ["datamodel", "api"],
+    "is_initial": False
+}
+
+print(json.dumps(changes, indent=2))
+PYTHON_EOF
+)
+
+    # 解析变更检测结果
+    AFFECTED_DOCS=$(echo "$changes_json" | jq -r '.affected_documents[]')
+    CHANGED_FILES=$(echo "$changes_json" | jq -r '.changed_files[]')
+    IS_INITIAL=$(echo "$changes_json" | jq -r '.is_initial')
+
+    if [ "$IS_INITIAL" = "true" ]; then
+        echo "📝 首次生成，执行完整生成流程"
+        UPDATE_MODE_ARG="full"
+    elif [ -z "$AFFECTED_DOCS" ] || [ "$AFFECTED_DOCS" = "null" ]; then
+        echo "✅ 无代码变更，无需更新文档"
+        exit 0
+    else
+        echo "📝 检测到变更，影响文档: $AFFECTED_DOCS"
+    fi
+fi
+
+# 5. 智能生成与合并
+if [ "$UPDATE_MODE_ARG" != "full" ] && [ -n "$AFFECTED_DOCS" ]; then
+    echo "🚀 开始增量更新..."
+
+    # 对每个受影响的文档
+    for doc_name in $AFFECTED_DOCS; do
+        echo "📄 处理文档: $doc_name"
+
+        # 检查是否需要更新
+        update_status=$(needs_update "$doc_name")
+
+        if [[ "$update_status" == UPDATE_NEEDED* ]] || [ "$update_status" = "NEW_DOCUMENT" ]; then
+            echo "  ✋ 需要更新: $update_status"
+
+            # 生成新内容（调用 content_generation skill）
+            new_content=$(generate_document_content "$doc_name")
+
+            # 检查现有文档是否存在
+            existing_doc="$OUTPUT_DIR/${doc_name}.md"
+
+            if [ -f "$existing_doc" ] && [ "$PRESERVE_MANUAL_EDITS" = "true" ]; then
+                # 智能合并
+                echo "  🔄 智能合并..."
+                merged_content=$(smart_merge "$existing_doc" "$new_content")
+                echo "$merged_content" > "$existing_doc"
+                echo "  ✅ 合并完成"
+            else
+                # 直接创建新文档
+                echo "  📝 创建新文档..."
+                echo "$new_content" > "$existing_doc"
+                echo "  ✅ 创建完成"
+            fi
+
+            # 记录文档元数据
+            source_files=$(get_document_sources "$doc_name")
+            record_document "$doc_name" "$source_files" "$CURRENT_COMMIT"
+
+        elif [ "$update_status" = "NO_UPDATE" ]; then
+            echo "  ⏭️  跳过（无变更）"
+        else
+            echo "  ⚠️  未知状态: $update_status"
+        fi
+    done
+
+    # 6. 更新索引（增量模式）
+    echo "📋 更新索引..."
+    # 调用 index_generation skill（增量模式）
+    # 只更新受影响的文档索引
+
+    # 7. 更新全局元数据
+    update_global_metadata "$CURRENT_COMMIT"
+
+    echo "✅ 增量更新完成！"
+else
+    # 完整生成流程
+    echo "🔄 执行完整生成..."
+    # 调用现有的 v3.0 完整生成流程
+fi
+```
+
+### 增量更新详细步骤
+
+#### 步骤 1: 加载元数据
+
+```bash
+# 加载元数据追踪库
+source plugins/libs/metadata_tracker.sh
+
+# 初始化元数据（如果不存在）
+init_metadata
+
+# 查看现有文档
+list_documents
+```
+
+#### 步骤 2: 变更检测
+
+调用 **doc-generator.change_detection** skill：
+
+```python
+# 变更检测伪代码
+def detect_changes(last_commit, current_commit):
+    # 1. Git diff 分析
+    changed_files = git_diff(last_commit, current_commit)
+
+    # 2. 过滤源文件
+    source_files = filter_source_files(changed_files)
+
+    # 3. 计算哈希值
+    file_hashes = calculate_batch_hashes(source_files)
+
+    # 4. 映射到文档
+    affected_docs = map_to_documents(source_files)
+
+    return {
+        "changed_files": source_files,
+        "affected_documents": affected_docs,
+        "file_hashes": file_hashes
+    }
+```
+
+#### 步骤 3: 智能生成
+
+对每个受影响的文档：
+
+1. **检查更新需求**：使用 `needs_update` 函数
+2. **生成新内容**：调用 content_generation skill
+3. **智能合并**：
+   - 如果文档存在且启用手动编辑保护：调用 smart_merge
+   - 否则直接覆盖
+
+#### 步骤 4: 记录元数据
+
+```bash
+# 记录每个生成的文档
+source_files='["README.md", "src/models/user.py"]'
+record_document "datamodel" "$source_files" "$CURRENT_COMMIT"
+```
+
+#### 步骤 5: 更新全局元数据
+
+```bash
+# 更新全局生成信息
+update_global_metadata "$CURRENT_COMMIT"
+```
+
+### 增量更新输出示例
+
+```
+🚀 模式: 增量更新（默认）
+🔍 检测代码变更...
+📝 检测到变更，影响文档: datamodel api
+
+📄 处理文档: datamodel
+  ✋ 需要更新: UPDATE_NEEDED (src/models/user.py)
+  🔄 智能合并...
+📊 合并报告:
+  - 总区域数: 5
+  - 保留区域: 1 (metadata)
+  - 更新区域: 4
+  ✅ 合并完成
+
+📄 处理文档: api
+  ✋ 需要更新: UPDATE_NEEDED (src/api/users.py)
+  📝 创建新文档...
+  ✅ 创建完成
+
+📋 更新索引...
+✅ 增量更新完成！
+⏱️  耗时: 8.2 秒（比完整生成快 67%）
+```
+
+### 配置示例
+
+#### 启用增量更新（默认）
+
+```json
+{
+  "update_mode": {
+    "strategy": "incremental",
+    "detect_changes": true,
+    "preserve_manual_edits": true,
+    "merge_conflicts": "skip"
+  }
+}
+```
+
+#### 禁用增量更新（完全重新生成）
+
+```json
+{
+  "update_mode": {
+    "strategy": "full"
+  }
+}
+```
+
+或使用命令行参数：
+```bash
+/wiki-generate --full
 ```
 
 ## 技术栈检测规则完整列表
@@ -648,12 +1059,5 @@ ls docs/zh/content/
 
 ---
 
-**版本**: 3.0.0
-**最后更新**: 2026-01-05
-**更新内容**:
-- 添加 Mermaid 流程图可视化文档生成流程
-- 集成 doc-generator skills（6 个 skills）通过 handoffs
-- 重构文档生成步骤为 skill 调用流程
-- 添加 Mermaid 图表验证步骤
-- 新增图表类型映射表
+**最后更新**: 2026-01-07
 **项目宪章**: 遵循所有 8 条核心原则

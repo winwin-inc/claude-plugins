@@ -1,20 +1,22 @@
----
-**生成时间**: {generation_time}
-**文档版本**: {doc_version}
-**基于代码版本**: {code_version}
-**生成工具**: wiki-generator v3.0
----
-
 # {api_name}
 
+<!-- WIKI-GEN-START: metadata -->
 <cite>
 **本文档中引用的文件**
 <!-- Claude: 列出该 API 端点相关的源文件 -->
 {source_files}
 </cite>
 
+**生成时间**: {generation_time}
+**文档版本**: {doc_version}
+**基于代码版本**: {code_version}
+**生成工具**: wiki-generator v3.1
+<!-- WIKI-GEN-END: metadata -->
+
 ## 目录
+<!-- WIKI-GEN-START: toc -->
 {toc}
+<!-- WIKI-GEN-END: toc -->
 
 ## API 概述
 

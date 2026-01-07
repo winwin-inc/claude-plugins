@@ -106,11 +106,14 @@ EOF
 #!/usr/bin/env bash
 # 过滤源代码文件
 # 用法: filter_source_files <file_list>
+# 注意: WIKI_CONFIG 环境变量由调用方设置（通过 config_resolver.sh）
 
 filter_source_files() {
     local file_list=$1
 
     # 从配置读取排除模式
+    # WIKI_CONFIG 环境变量由 config_resolver.sh 管理
+    # 配置文件位置: {output_dir}/wiki-config.json
     local exclude_patterns=$(python3 - <<PYTHON_EOF
 import json
 from pathlib import Path
