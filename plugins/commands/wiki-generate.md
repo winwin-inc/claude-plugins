@@ -239,6 +239,8 @@ flowchart LR
 
 以下文档是必需的，必须生成：
 
+**注意**：所有模板文件位于 `plugins/templates/wiki-generate/{lang}/` 目录，其中 `{lang}` 为 `zh`（中文）或 `en`（英文）。
+
 | 序号 | 文档名 | 模板文件 | 说明 |
 |------|--------|----------|------|
 | 00 | 快速开始 | quickstart.md.template | 5 分钟入门指南 |
@@ -256,10 +258,12 @@ flowchart LR
 
 以下文档根据技术栈检测生成：
 
+**注意**：所有模板文件位于 `plugins/templates/wiki-generate/{lang}/` 目录。
+
 | 技术栈 | 文档名 | 模板文件 |
 |--------|--------|----------|
 | SQLAlchemy/Django ORM | 数据模型/数据模型 | datamodel.md.template |
-| FastAPI/Flask/Django REST | API 文档/API 接口 | api.md.template |
+| FastAPI/Flask/Django REST | API 文档/API 接口 | api-reference.md.template 或 api-endpoint.md.template |
 | Celery/RQ | 任务队列/任务队列 | taskqueue.md.template |
 
 #### 5.3 模块扫描
