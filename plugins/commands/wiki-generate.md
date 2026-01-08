@@ -326,7 +326,7 @@ fi
 
 **技术栈映射规则**：
 - `datamodel` → 生成 `数据模型/` 目录文档
-- `api` → 生成 `API 文档/` 目录文档
+- `api` → 生成 `API文档/` 目录文档
 - `taskqueue` → 生成 `任务队列/` 目录文档
 - `testing` → 生成 `测试策略.md`
 - `deployment` → 生成 `部署指南.md`
@@ -367,8 +367,8 @@ docs/
         ├── 03-系统架构设计.md
         ├── 数据模型/          # 条件文档（检测到 SQLAlchemy）
         │   └── 数据模型.md
-        ├── API 文档/          # 条件文档（检测到 FastAPI）
-        │   └── API 接口.md
+        ├── API文档/          # 条件文档（检测到 FastAPI）
+        │   └── API接口.md
         ├── 04-核心功能.md
         ├── 05-开发指南.md
         ├── 06-部署指南.md
@@ -423,7 +423,7 @@ flowchart LR
 | 技术栈 | 文档名 | 模板文件 |
 |--------|--------|----------|
 | SQLAlchemy/Django ORM | 数据模型/数据模型 | datamodel.md.template |
-| FastAPI/Flask/Django REST | API 文档/API 接口 | api-reference.md.template 或 api-endpoint.md.template |
+| FastAPI/Flask/Django REST | API文档/API接口 | api-reference.md.template 或 api-endpoint.md.template |
 | Celery/RQ | 任务队列/任务队列 | taskqueue.md.template |
 
 #### 5.3 模块扫描
@@ -1044,9 +1044,9 @@ update_global_metadata "$CURRENT_COMMIT"
 |---------|---------|---------|
 | SQLAlchemy | `from sqlalchemy` 或 `import sqlalchemy` | 数据模型/数据模型.md |
 | Django ORM | `from django.db` | 数据模型/数据模型.md |
-| FastAPI | `from fastapi` 或 `import fastapi` | API 文档/API 接口.md |
-| Flask | `from flask` | API 文档/API 接口.md |
-| Django REST | `from rest_framework` | API 文档/API 接口.md |
+| FastAPI | `from fastapi` 或 `import fastapi` | API文档/API接口.md |
+| Flask | `from flask` | API文档/API接口.md |
+| Django REST | `from rest_framework` | API文档/API接口.md |
 | Celery | `from celery` 或 `import celery` | 任务队列/任务队列.md |
 | RQ | `import rq` | 任务队列/任务队列.md |
 | pytest | `import pytest` | 测试策略.md |
